@@ -1,0 +1,285 @@
+{
+  "name": "005-email",
+  "nodes": [
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "6bb1c194-6c30-422f-8d2b-4c7a23de701a",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "94JWf8panO4rmZtJ",
+          "name": "NaverMail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=메일 제목:\n{{ $json.subject }}\n\n메일 내용:\n{{ $json.text }}\n\n-------------\n\n위의 메일의 내용을 참고하여 스팸여부를 판단 하세요.\n스팸 여부 판별 이유는 한글로 작성",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        20,
+        -80
+      ],
+      "id": "d43829c3-26eb-46cd-ac13-b3d72d3b67bc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        100
+      ],
+      "id": "aca4162e-efa7-4836-a00d-8846d148ee0c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"is_spam\": \"스팸여부\",\n    \"reason\": \"스팸 판별 이유\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        100
+      ],
+      "id": "d3fb096b-9cd7-4412-ba05-5e6476800402",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.is_spam }}",
+                    "rightValue": "yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d9384317-7088-4dac-9bba-4d4844a6c6f5"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "015ea9d8-f89a-49d0-9051-23654ffc871d",
+                    "leftValue": "={{ $json.output.is_spam }}",
+                    "rightValue": "no",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        340,
+        -80
+      ],
+      "id": "58b9d3ce-5a61-4387-98fe-7b28352b20c0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "authentication": "coreImapAccount",
+        "resource": "email",
+        "mailboxPath": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "emailDateRange": {},
+        "emailFlags": {},
+        "emailSearchFilters": {
+          "from": "={{ $('Email Trigger (IMAP)').item.json.from.value[0].address }}",
+          "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}"
+        }
+      },
+      "type": "n8n-nodes-imap.imap",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -140
+      ],
+      "id": "d9c93219-1209-4efe-a4c2-cd6cbfc265e2",
+      "name": "GetMail",
+      "credentials": {
+        "imap": {
+          "id": "94JWf8panO4rmZtJ",
+          "name": "NaverMail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "coreImapAccount",
+        "resource": "email",
+        "operation": "moveEmail",
+        "sourceMailbox": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "emailUid": "={{ $json.uid }}",
+        "destinationMailbox": {
+          "__rl": true,
+          "value": "Deleted Messages",
+          "mode": "list",
+          "cachedResultName": "Deleted Messages"
+        }
+      },
+      "type": "n8n-nodes-imap.imap",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -140
+      ],
+      "id": "de535205-316d-4a95-bfbe-5daf1a1f6b77",
+      "name": "DeleteMail",
+      "credentials": {
+        "imap": {
+          "id": "94JWf8panO4rmZtJ",
+          "name": "NaverMail"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "GetMail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetMail": {
+      "main": [
+        [
+          {
+            "node": "DeleteMail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fce076e5-3652-426a-a09c-560f35669f57",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "92c6UW1d8rDNfySK",
+  "tags": []
+}

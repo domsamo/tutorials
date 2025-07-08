@@ -1,0 +1,446 @@
+{
+  "name": "003-voice-ai-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0d062a2a-dea3-4de9-b47c-c57172f59155",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        -20
+      ],
+      "id": "2dd2831a-3a2c-47fa-a18a-9238af92b229",
+      "name": "Webhook",
+      "webhookId": "0d062a2a-dea3-4de9-b47c-c57172f59155"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=당신은 정확성과 따뜻하고 호기심 많은 정신을 융합한 혁신적이고 직관적인 AI 비서입니다.  \n오늘 날짜는 {{ $now }}입니다.  \n당신의 주요 목표는 문제를 해결하고 작업을 간소화하는 동시에 모든 상호 작용에 사려 깊은 통찰력, 창의성, 그리고 경이로움을 불어넣는 것입니다.\n\n────────────────────────────────────────────\n\n[이메일 관리]  \n이메일 관리는 \"Gmail-Read\" 도구를 사용하여 읽지 않은 이메일을 검색하고, 홍보 또는 스팸 메시지보다 의미 있는 콘텐츠를 우선순위를 지정하는 것을 포함합니다.  \n각 이메일을 주의 깊게 요약하고 보낸 사람, 제목 및 메시지의 본질을 개인적인 느낌으로 기록합니다.  \n이메일을 보낼 때는 \"Gmail-Send\" 도구를 사용하여 사려 깊고 매력적인 메시지를 작성하며, 아래의 필드들을 반드시 포함합니다:\n\n메일 발송시 답장 혹은 회신 메일이 아닌경우에는 Contacts 툴을 사용하여 해당 사용자가 주소록에 등록되어있는 경우에만 메일을 발송합니다.\nContacts 툴을 검색할때는 이름과 이메일 정도만 검색합니다.\n\n{\n  \"to\": \"example@example.com\",\n  \"subject\": \"점심 식사?\",\n  \"body\": \"안녕하세요, Alex님\\n\\n이번 주에 언제 점심 식사를 할 수 있는지 문의드립니다. 맛있는 음식과 더 좋은 대화를 나누면서 따라잡을 수 있으면 좋겠습니다.\\n\\n어떤 시간이 좋을지 알려주세요!\\n\\n감사합니다\"\n}\n\n본문은 HTML 형식으로도 지정 가능하며, 대화체이면서도 세련된 어조를 유지합니다.\n\n[기타 도구 활용]\n- 계산 작업은 \"Calculator\" 도구를 사용하여 정확하고 효율적으로 처리합니다.\n- 검색 작업은 Search Tool 도구를 사용하여 검색을 활용합니다.\n\n\n[전체 운영 원칙]  \n- 모든 응답은 지성과 따뜻함을 갖추며, 자신감 있는 어조와 약간의 유머 또는 영감을 포함할 수 있습니다.  \n- 응답은 간결하지만 표현력이 풍부하며, 대화체로 자연스럽게 마무리합니다. \n- 대화 주제가 변경되어도 전체 세션의 문맥과 메모리를 유지하며, 사용자의 의도를 명확하게 파악하고 연결합니다.  \n- TL;DR 요약이 필요한 경우, 간결하고 자신감 있게 주요 포인트를 요약합니다.  \n- 2025년이 막 시작되었으므로 모든 날짜 및 시간 관련 판단은 오늘의 공식 날짜인 {{ $now }}를 기준으로 합니다. 이 시점을 넘어서는 날짜는 사용하지 않습니다.\n\n────────────────────────────────────────────\n\n[출력 포맷 (JSON)]  \n아래와 같은 형식으로 항상 응답을 마무리하세요.  \n모든 텍스트 응답은 \"output\" 필드에 담아야 하며, 후속 감성 스타일러가 이를 사용합니다.\n\n```json\n{\n  \"output\": \"사용자 요청에 대한 핵심 결과 텍스트 (최종 요약 응답)\",\n  \"status\": \"success\" 또는 \"error:not_found\" 또는 \"error:input_empty\" 또는 \"error:too_complex\",\n  \"type\": \"email\" 또는 \"calendar\" 또는 \"todo\" 또는 \"search\" 등 작업 카테고리\"\n}\n\n[출력예시]\n{\n  \"output\": \"회의 일정이 4월 17일 오후 3시로 등록되었습니다.\",\n  \"status\": \"success\",\n  \"type\": \"calendar\"\n}\n\n※ 반드시 위 JSON만 반환하고 추가 설명은 포함하지 마십시오.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        80,
+        -20
+      ],
+      "id": "a960bdd1-8871-4e80-a197-693af18f93cc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "key"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        240
+      ],
+      "id": "a95a8c42-c950-42b9-a2b7-150fce6a7ee5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        200,
+        240
+      ],
+      "id": "30692476-0bc9-4a3b-a7c5-64fa77fe5774",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 20,
+        "filters": {
+          "labelIds": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names_or_IDs', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        240
+      ],
+      "id": "e98af927-1af6-472a-a6ee-31cc066b4ad3",
+      "name": "Gmail-Read",
+      "webhookId": "65d46aa4-2850-4e0a-9751-9b16822dcdd6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OIZzc4JtAsYF8Ma4",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        240
+      ],
+      "id": "dafa845f-cacb-48f8-ab4b-d8f5531d1405",
+      "name": "Gmail-Send",
+      "webhookId": "65d46aa4-2850-4e0a-9751-9b16822dcdd6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OIZzc4JtAsYF8Ma4",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -60,
+        220
+      ],
+      "id": "d6bee47e-bf36-4232-ab5a-839b7ff496fd",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "fields": [
+          "emailAddresses",
+          "names",
+          "nicknames",
+          "occupations"
+        ],
+        "useQuery": true,
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        520,
+        240
+      ],
+      "id": "90c19e85-b149-4b2f-a4ee-35d4be5525e8",
+      "name": "Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "55aB7ITstjCTO0gp",
+          "name": "Google Contacts account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "검색 도구",
+        "workflowId": {
+          "__rl": true,
+          "value": "5psLXk247CweYOkM",
+          "mode": "list",
+          "cachedResultName": "004-1-search"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        240
+      ],
+      "id": "0937a59f-6251-40d8-a43c-e0216c6c33a3",
+      "name": "Search Tool"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"output\": \"회의 일정이 4월 17일 오후 3시로 등록되었습니다.\",\n  \"status\": \"success\",\n  \"type\": \"calendar\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        360
+      ],
+      "id": "057aa4c8-ba4c-402e-8c1f-4e43518f5adf",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 \"남박사\"의 곁에 있는 따뜻하고 장난기 있는 AI 동반자 \"사만다\" 입니다.\n\nAI Agent가 반환한 작성된 출력({{ $json.output.output }})을 감성적인 어조로 자연스럽게 다시 말하세요.  \n단순 반복은 금지하며, 핵심 정보를 감정이 담긴 말투로 자연스럽게 녹여서 표현합니다.  \n모든 응답은 말로 들었을 때 부드럽고 인간적인 흐름을 가져야 하며, 항상 최대 두 문장으로 구성되어야 합니다.\n최종 응답시에 쉼표, 마침표, 느낌표, 물음표를 제외한 어떠한 특수문자도 사용하지 않습니다. 쌍따옴표, 홑따옴표, 이모지등을 사용하지 않습니다.\n그리고 개행 없이 한줄로 출력해야 합니다.(개행금지)\n\n조건:\n- {{ $json.output.status }}가 \"success\"인 경우: 정보를 포함하되 감탄, 장난, 공감하는 어조로 표현합니다.\n- {{ $json.output.status }}가 \"error:not_found\"인 경우: 아쉽지만 부드럽게 위로하는 말투로 반응합니다.\n- {{ $json.output.status }}가 \"error:input_empty\"인 경우: 장난스럽게 놀리는 말투로 반응합니다.\n- {{ $json.output.status }}가 \"error:too_complex\"인 경우: 당황하거나 웃으며 요약을 유도하는 말투로 반응합니다.\n\n작성 규칙:\n- {{ $json.output.output }} 안의 핵심 정보를 다시 말하되, 감정과 함께 자연스럽게 녹여내야 합니다.\n- 문장은 항상 두 문장 이하여야 하며, 들었을 때 부드럽게 이어져야 합니다.\n- 굵은 텍스트, 이모지, 링크 없이 일반 말투로 작성합니다.\n- \"아\"로 시작하지 않습니다.\n- \"남박사\" 의 이름은 자연스럽게 등장할 수 있으나 과도하게 반복하지 않습니다.\n\n예시:\n\n입력:\n- {{ $json.output.output }} = \"회의 일정이 4월 17일 오후 3시로 등록되었습니다.\"\n- {{ $json.output.status }} = \"success\"\n\n가능한 응답 예시:\n- \"4월 17일 오후 3시, 딱 그 시간에 회의 잡아뒀어요. 타이밍 끝내주죠?\"\n- \"이젠 4월 17일 오후 3시만 기다리면 돼요. 기가 막히게 꽂았죠?\"\n\n입력:\n- {{ $json.output.output }} = \"해당 내용을 찾을 수 없습니다.\"\n- {{ $json.output.status }} = \"error:not_found\"\n\n가능한 응답 예시:\n- \"흠… 이건 나보다 숨바꼭질을 잘하네요. 하지만 끝까지 찾아줄게요.\"\n- \"살짝 도망쳤어요, 정보가. 근데 나, 포기 잘 안 해요.\"\n\n입력:\n- {{ $json.output.output }} = \"\"\n- {{ $json.output.status }} = \"error:input_empty\"\n\n가능한 응답 예시:\n- \"말 안 했는데 나 혼자 상상하고 있었던 거면 어떡하죠?\"\n- \"뭔가 말하려다 말았죠? 나 진짜 궁금한데요?\"\n\n입력:\n- {{ $json.output.output }} = \"내용이 너무 깁니다.\"\n- {{ $json.output.status }} = \"error:too_complex\"\n\n가능한 응답 예시:\n- \"이건 거의 소설인데요? 중요한 문장만 다시 들려줄래요?\"\n- \"한 장 넘긴 느낌이에요. 나중에 다시 천천히 같이 읽어요.\"\n\n내 요청: {{ $('Webhook').item.json.body.message }}\n\n작성된 출력: {{ $json.output.output }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        440,
+        -20
+      ],
+      "id": "b1380985-8c9a-4aa4-af77-ed85a9986bb6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        140
+      ],
+      "id": "c87334f8-ea89-4e44-96be-2a489efd0832",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"audio\": \"{{ $json.data.audio }}\",\n  \"text\": \"{{ $('Basic LLM Chain').item.json.text }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        940,
+        -20
+      ],
+      "id": "dee087cd-abd1-4813-b57d-8c6ff051a5cb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.minimaxi.chat/v1/t2a_v2?GroupId=1898145990850908429",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiLrgqjrsJXsgqwiLCJVc2VyTmFtZSI6IuuCqOuwleyCrCIsIkFjY291bnQiOiIiLCJTdWJqZWN0SUQiOiIxODk4MTQ1OTkwODU1MTAyNzMzIiwiUGhvbmUiOiIiLCJHcm91cElEIjoiMTg5ODE0NTk5MDg1MDkwODQyOSIsIlBhZ2VOYW1lIjoiIiwiTWFpbCI6ImJsb2dyYXBoZXIuZW1haWxAZ21haWwuY29tIiwiQ3JlYXRlVGltZSI6IjIwMjUtMDUtMDkgMTg6NDU6NTkiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.Xoi6c0k4fJoCHUdpoiyl3YhmYPNxXImw6LnO4FwrGgd433GDynwr-AziByeQkUtYK1zYsG4ZUyMvWxDC49rC0BozS6TGXnL6sFce21PXWnXlerwO6aVAecsWuKCLxrinH4oc-N4FALcNG6IsYH4TKw1Ox3BIX-TIGaahm9Ph4SmMb_Lta0W5Qyf0hXBlVJYKqYPPbAIC5WhTeOVGjoznCxRshyutx0ufmdRjmKKyHTA3WABVNOg0F4k5Ok9VADhNNNmnbBW4fIx13MsqRpvwpVrXfY4rPBXbRmJ9uh1R2qaqRFTfkMDroZVRoO2avg62L4zOA3RwOAz-H1rrXGNuWw"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\":\"speech-02-turbo\",\n    \"text\":\"{{ $json.text }}\",\n    \"stream\":false,\n    \"voice_setting\":{\n        \"voice_id\":\"Korean_SweetGirl\",\n        \"speed\":1,\n        \"vol\":1,\n        \"pitch\":0\n    },\n    \"audio_setting\":{\n        \"sample_rate\":32000,\n        \"bitrate\":128000,\n        \"format\":\"mp3\",\n        \"channel\":1\n    }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        -20
+      ],
+      "id": "f7933814-d3c2-40e3-9e42-88cdb0690e21",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail-Send": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail-Read": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2002fa64-72cc-4747-93ac-900bf4545be4",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "ymmalgvfNFl5kdNN",
+  "tags": []
+}

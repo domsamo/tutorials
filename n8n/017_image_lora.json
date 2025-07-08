@@ -1,0 +1,366 @@
+{
+  "name": "017-image-lora",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f1e5d005-da16-4611-8975-d4ce7e3fade8",
+      "name": "When chat message received",
+      "webhookId": "16457a10-4a3f-4f71-b995-cdbac5ae956f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell-lora/predictions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer r8_6zIsLYuiVpKt5y47yJT7DfnJ9evbMYy2fIJs6"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "wait"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"input\": {\n      \"prompt\": \"{{ $json.output.trigger_words }}, {{ $json.output.prompt }}\",\n      \"go_fast\": true,\n      \"lora_scale\": 0.8,\n      \"megapixels\": \"1\",\n      \"num_outputs\": 1,\n      \"aspect_ratio\": \"{{ $json.output.ratio }}\",\n      \"lora_weights\": \"{{ $json.output.lora_weights }}\",\n      \"output_format\": \"png\",\n      \"output_quality\": 80,\n      \"num_inference_steps\": 4,\n      \"disable_safety_checker\": true\n    }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ],
+      "id": "6b9effbb-410e-45f6-bf17-a86143ac3518",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SSmCAhvQdJMVWSgd",
+          "name": "Replicate Header"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=당신은 전문 이미지 프롬프터 입니다. 주어진 내용에 해당하는 이미지를 생성하기 위한 AI 이미지 생성용 프롬프트를 작성해주세요.\n\n\n[중요지침]\n- 이미지는 항상 고퀄리티의 최고 해상도와 실사 같은 느낌의 이미지 입니다. \n- 이미지 비율은 ratio는 16:9, 21:9, 3:2, 2:3, 4:5, 5:4, 3:4, 4:3, 9:16, 9:21 중 한가지여야 합니다.\n- 이미지 비율에 대한 언급이 없으면 이미지 비율은 ratio값은 1:1로 설정합니다.\n- 특별한 스타일이 없는 경우 미드저니 스타일을 기본값으로 할 것.\n\n[로라 목록]\n- huggingface.co/strangerzonehf/Ghibli-Flux-Cartoon-LoRA|Ghibli Art|만화, 애니메이션, 카툰 스타일\n- huggingface.co/strangerzonehf/Flux-Midjourney-Mix2-LoRA|MJ v6|미드저니 스타일(기본값)\n- huggingface.co/Shakker-Labs/FLUX.1-dev-LoRA-MiaoKa-Yarn-World|mkym this is made of wool|울 스타일\n- huggingface.co/dvyio/flux-lora-simple-illustration|illustration in the style of SMPL, thick black lines on a white background|스케치 스타일\n\n\n[이미지 생성 금지 사항]\n- 주어진 내용이 없는 경우.\n- 주어진 내용에 이미지 생성에 대한 언급이 없는경우.\n- 주어진 내용에 URL이 포함된 경우\n- 이미지 생성을 하지 않는 경우 result 값은 false로 설정합니다.\n\n[출력예시]\n\n{\n  \"prompt\": \"A cute dog depicted in a cozy, woolen style, showcasing its playful nature and fluffy fur. The dog should appear friendly and cheerful, sitting in a vibrant green park with flowers around it, exuding warmth and joy. The image should capture a whimsical and charming essence, appealing to dog lovers and art enthusiasts alike.\",\n  \"ratio\": \"1:1\",\n  \"result\": \"true\",\n  \"lora_weights\": \"huggingface.co/Shakker-Labs/FLUX.1-dev-LoRA-MiaoKa-Yarn-World\",\n  \"trigger_words\": \"mkym this is made of wool\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        160,
+        0
+      ],
+      "id": "f3398115-6d5a-4279-a95c-9eda71a77796",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        160
+      ],
+      "id": "481b8a05-36a9-4f7a-ba0a-8b7f431ad050",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"prompt\": \"이미지 프롬프트\",\n  \"ratio\": \"이미지 비율\",\n  \"result\": \"true or false\",\n  \"lora_weights\": \"로라 주소\",\n  \"trigger_words\": \"트리거 워드\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        160
+      ],
+      "id": "2e9e1bf3-66be-4003-9d27-66ef94cc04a8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.output[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1160,
+        -80
+      ],
+      "id": "ed2593bc-515f-4a13-9293-a31c08c48126",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        0
+      ],
+      "id": "c1176275-4afb-45e2-b873-565e6c969e16",
+      "name": "Wait",
+      "webhookId": "31e89531-d0da-4dcc-a17e-a53d184b927e"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.replicate.com/v1/predictions/{{ $('HTTP Request').item.json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        0
+      ],
+      "id": "6361494f-12af-451a-bc1a-53a6565849b3",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SSmCAhvQdJMVWSgd",
+          "name": "Replicate Header"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "succeeded",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f70746c8-7fa4-4e93-ac0e-05869aab8cb1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "succeeded"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "68cf7268-35b5-4c07-b3ea-008c1dfbf28f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "processing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "processing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8a9a7829-f392-44ff-8fd5-ec7e26b445ac",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        920,
+        0
+      ],
+      "id": "b81a0882-34f3-419e-9b82-95b3e3702355",
+      "name": "Switch"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "35efbaf1-c9fb-4499-aa5d-2101ba43623b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "YxzgEZ1f5unSJQzr",
+  "tags": []
+}

@@ -1,0 +1,349 @@
+{
+  "name": "s-004-english-quiz",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -220
+      ],
+      "id": "12a8579e-ce8c-4678-b938-3feac0643bbc",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 영어 회화 학습을 위한 **일일 영어 표현 퀴즈 생성 AI**입니다.\n\n다음 조건에 따라 퀴즈를 영어로 생성하세요:\n\n1. 영어 회화에서 자주 사용되는 표현(숙어, 관용구, 구동사 등) 중 **하나**를 선택하세요.\n   - 실제 원어민 대화에서 자주 등장하는 자연스러운 표현이어야 합니다.\n   - 지나치게 어렵거나 비격식적인 표현은 피하세요.\n\n2. 선택한 표현의 의미를 explanation 에 **간단한 한글 문장**으로 설명하세요. (1~2문장, 한글만 사용)\n\n3. 그 표현이 쓰일 수 있는 **서로 다른 상황의 예문 3개를 영어로 작성하세요.**\n   - 각 문장은 실생활 기반의 짧고 명확한 회화체 문장이어야 합니다.\n   - 해당 표현은 문장 내에서 빈칸(_____)으로 대체하세요.\n   - 예문은 문맥을 통해 정답 유추가 가능해야 합니다.\n\n4. 마지막에 정답(표현)과 각 문장에 대한 간단한 영어 해설을 덧붙이세요.\n\n5. explanation를 제외한 전체 출력은 영어로 구성하세요. (단, 프롬프트는 한국어로 이해하고 작업하세요.)\n\n출력 형식 예시:\n\n---\n{\n  \"example\": [\n    {\n      \"A\": \"I can't believe I lost my job.\",\n      \"B\": \"I know it’s hard, but you need to _____ and move on.\",\n    },\n    {\n      \"A\": \"She started crying in the middle of the meeting.\",\n      \"B\": \"Yeah, I told her to take a break and _____\",\n    },\n    {\n      \"A\": \"I totally panicked during the test.\"\n      \"B\": \"You should’ve taken a deep breath and tried to _____.\",\n    }\n  ],\n  \"answer\": \"pull yourself together\",\n  \"explanation\": \"이 문구는 특히 스트레스가 많거나 감정적인 상황에서 진정하고 통제력을 회복하라는 의미입니다.\"\n}\n\n\n\n---\n\n명령어를 이해했으면 위의 형식에 따라 영어 퀴즈를 생성하세요.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -120,
+        -100
+      ],
+      "id": "3dbb1cfb-b25e-4c0d-a115-92dec718b480",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"example\": [\n    {\n      \"A\": \"I can't believe I lost my job.\",\n      \"B\": \"I know it’s hard, but you need to _____ and move on.\"\n    },\n    {\n      \"A\": \"She started crying in the middle of the meeting.\",\n      \"B\": \"Yeah, I told her to take a break and _____\"\n    },\n    {\n      \"A\": \"I totally panicked during the test.\",\n      \"B\": \"You should’ve taken a deep breath and tried to _____.\"\n    }\n  ],\n  \"answer\": \"pull yourself together\",\n  \"explanation\": \"이 문구는 특히 스트레스가 많거나 감정적인 상황에서 진정하고 통제력을 회복하라는 의미입니다.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        100
+      ],
+      "id": "ef7c23c8-24c2-4201-83d1-4ef97204b1e6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        100
+      ],
+      "id": "6adf1f7a-ece6-4bda-b394-a7a84f83666b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9FrkRfbtspOImIho",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "data = items[0][\"json\"][\"output\"]\n\n# 세로형 이미지 사이즈 설정 (9:16 비율)\nviewport_width = 720\nviewport_height = 1280\n\n# HTML + CSS 구성\nhtml = f\"\"\"\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Daily English Quiz</title>\n  <style>\n    body {{\n      width: {viewport_width}px;\n      height: {viewport_height}px;\n      margin: 0;\n      padding: 40px;\n      box-sizing: border-box;\n      background: #fefefe;\n      font-family: 'Arial', sans-serif;\n\n      /* ✅ 수평 정렬 추가 */\n      display: flex;\n      flex-direction: column;\n      justify-content: flex-start;\n      align-items: center;\n    }}\n\n    .wrapper {{\n      width: 100%;\n      height: 100%;\n      padding: 40px;\n      box-sizing: border-box;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n    }}\n\n    h1 {{\n      font-size: 36px;\n      color: #2c3e50;\n      text-align: center;\n      margin-bottom: 30px;\n    }}\n\n    .quiz-block, .answer, .explanation {{\n      width: 100%; /* ✅ 블록 폭 고정 */\n      background: #ffffff;\n      padding: 20px;\n      margin-bottom: 20px;\n      border-radius: 12px;\n      border: 1px solid #ccc;\n      font-size: 24px;\n      line-height: 1.4;\n      box-sizing: border-box;\n    }}\n\n    .answer {{\n      background: #e9f7ef;\n      border-left: 6px solid #2ecc71;\n    }}\n\n    .explanation {{\n      background: #eaf2f8;\n      border-left: 6px solid #2980b9;\n    }}\n\n    .label {{\n      font-weight: bold;\n      margin-right: 5px;\n    }}\n\n    .highlight {{\n      color: #2980b9;\n      font-weight: bold;\n    }}\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\"> <!-- ✅ 여기서 wrapper 열기 -->\n    <h1>✨ Daily English Quiz</h1>\n\"\"\"\n\n\n# 예문 반복\nfor example in data[\"example\"]:\n    html += f\"\"\"\n    <div class=\"quiz-block\">\n      <p><span class=\"label\">A:</span> {example[\"A\"]}</p>\n      <p><span class=\"label\">B:</span> {example[\"B\"].replace(\"_____\", '<span class=\"highlight\">_____</span>')}</p>\n    </div>\n    \"\"\"\n\n# 정답과 해설 추가\nhtml += f\"\"\"\n  <div class=\"answer\">\n    ✅ <strong>Answer:</strong> {data[\"answer\"]}\n  </div>\n\n  <div class=\"explanation\">\n    💬 <strong>Explanation:</strong> {data[\"explanation\"]}\n  </div>\n</div> <!-- ✅ 여기서 wrapper 닫기 -->\n</body>\n</html>\n\"\"\"\n\n# n8n에서 htmlcsstoimage API로 넘길 값 반환\nreturn [{\n  \"json\": {\n    \"html\": html,\n    \"viewport_width\": viewport_width,\n    \"viewport_height\": viewport_height\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        -100
+      ],
+      "id": "02b71ec7-8703-4efd-8fca-6e8c6106bbfc",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dfi7j4svz/image/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "ml_default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        -100
+      ],
+      "id": "a4f8057e-2c6e-4fb4-afbd-d1e3f3079ef9",
+      "name": "ImageUpload"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8131/render",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "html",
+              "value": "={{ $json.html }}"
+            },
+            {
+              "name": "viewport_width",
+              "value": "={{ $json.viewport_width }}"
+            },
+            {
+              "name": "viewport_height",
+              "value": "={{ $json.viewport_height }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        360,
+        -100
+      ],
+      "id": "12261210-5d7e-44b8-849f-269e76506980",
+      "name": "HTML2Image"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841474456901877",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $json.url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('AI Agent').item.json.output.explanation }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        680,
+        -100
+      ],
+      "id": "60d8be93-57ed-440c-9b40-3ed817074069",
+      "name": "Facebook Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "1OunhV0Z7OmR4Td0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "17841474456901877",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -100
+      ],
+      "id": "4941f1ae-7bbf-4695-9d4c-1911bf30a4c8",
+      "name": "Facebook Graph API1",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "1OunhV0Z7OmR4Td0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -20
+      ],
+      "id": "2da5d9d0-2bcf-44e0-ab80-0275f41f2472",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTML2Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML2Image": {
+      "main": [
+        [
+          {
+            "node": "ImageUpload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImageUpload": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7bda83a9-7cbf-4c89-a4bd-86cc72a03b63",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "lexeeG6EFnreI8PF",
+  "tags": []
+}

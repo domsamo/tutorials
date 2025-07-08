@@ -1,0 +1,467 @@
+{
+  "name": "007-meeting-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 메일 회신 전문 에이전트 입니다.\n다음의 메일의 제목과 내용을 보고 어떤 처리를 할지 충분히 이해하고 판단하세요.\n\n-----------\n\n메일 제목:\n{{ $('MAIL DATA').item.json.subject }}\n\n메일 내용:\n{{ $('MAIL DATA').item.json.text }}\n\n보낸 사람 이메일 주소:\n{{ $('MAIL DATA').item.json.from }}\n\n보낸 사람:\n{{ $('MAIL DATA').item.json.name }}\n\n오늘 날짜:\n{{ $json.currentDate }}\n\n-----------\n\n- 반드시 오늘 날짜를 먼저 확인하세요.\n- 일정이나 미팅 약속을 요청하는 경우 반드시 Cal-Read 툴을 사용하여 일정 확인 후 해당 날짜에 일정이 없는 경우에만 약속을 잡아야함.\n- 반드시 상대방이 요구하는 날짜를 정확하게 확인 할 것.\n- 일정에 대한 내용이 메일에 있다면 Cal-Write 툴을 사용하여 일정을 등록해야함.\n- 일정 등록시 미팅 대상에 대한 정보(이메일, 이름 등)를 최대한 자세히 함께 기재할것.\n- 일정을 잡았을 경우 답장에 해당 일정에 대한 정보를 함께 발송할 것(예: 5월 10일 오후 3시에 뵙겠습니다.)\n- 회신을 보낼때 받은 메일의 제목을 쓰게되면 앞에 [Re]를 붙여서 회신임을 알릴것.\n\n------\n\n날짜 계산 지침\n- 다음주 목요일 등 자연어 날짜가 들어있는 경우, 반드시 오늘 날짜 기준으로 정확한 날짜 (예: 2025-10-11) 변환 후 처리 해야 합니다.\n- 예를 들어 오늘이 금요일이라면 다음주 목요일은 반드시 다음 주의 목요일인 6일 후를 의미합니다. 이렇게 날짜를 직접 계산 하세요.\n- 날짜 계산은 Asia/Seoul 시간을 기준으로 합니다.\n- 일정에 약속 시간 언급이 없는 경우라면 오전 9시 이후, 12시~1시 제외, 오후 6시 이전 중 아무 시간대나 알아서 약속을 잡습니다.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        400,
+        -80
+      ],
+      "id": "d600f744-f676-4531-b251-4f9551ca5165",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        140
+      ],
+      "id": "712ff7ef-be09-4611-89a1-bd29f66252f5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"is_spam\": \"스팸여부\",\n    \"reason\": \"스팸 판별 이유\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        140
+      ],
+      "id": "580a462a-5acc-4f68-8cea-a0c690c3a242",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -160
+      ],
+      "id": "711c1345-cf35-4a8b-a8e8-beb7e29822ff",
+      "name": "NaverEmail",
+      "credentials": {
+        "imap": {
+          "id": "94JWf8panO4rmZtJ",
+          "name": "NaverMail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7db994db-22ca-457b-924f-d926baa59226",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
+              "name": "from",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "04b2ea04-8414-4ca1-8ca0-338b5e51fa56",
+              "name": "name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "bc258476-f039-4435-93ad-4479402143e2",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -100,
+        -160
+      ],
+      "id": "452d93dc-7cf9-4e5b-a663-9acd45e737a7",
+      "name": "Naver Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b944a08b-378f-4d9f-8726-b4b893432c35",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "b8b36de3-0c86-42ff-93db-855d93e0ba09",
+              "name": "from",
+              "value": "={{ $json.from }}",
+              "type": "string"
+            },
+            {
+              "id": "902f71aa-78a9-4c41-bf0c-16a7c68d97d9",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "deabfeb8-6a89-40fc-848d-cc3ecbe20201",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -80
+      ],
+      "id": "6f97fcfc-3618-49b4-8739-d30fa9e44391",
+      "name": "MAIL DATA"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N_TEST"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        140
+      ],
+      "id": "f9365782-dba7-48c7-80d1-ae8e642e477b",
+      "name": "Cal-Read",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "irKVjHpfenl4xbbA",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N_TEST"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        140
+      ],
+      "id": "2d66b99b-ab71-4d84-a811-b7a64fae2b2e",
+      "name": "Cal-Write",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "irKVjHpfenl4xbbA",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7db994db-22ca-457b-924f-d926baa59226",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
+              "name": "from",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "4bc4a8f9-f51b-49b6-9953-a228ad4cdbc8",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -100,
+        20
+      ],
+      "id": "e45f26d8-4234-476b-bd32-e94441e9d8ca",
+      "name": "Google Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        20
+      ],
+      "id": "2ea2c51a-ed0f-4e4d-a53e-03cd16e89fe4",
+      "name": "GmailEmail",
+      "credentials": {
+        "imap": {
+          "id": "0W6qSn0eYoxM9pMM",
+          "name": "Gmail"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "timezone": "Asia/Seoul"
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "76276e07-0f4f-45e2-b25a-738b278f7670",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "fromEmail": "=nambaksa2mail@naver.com",
+        "toEmail": "={{ $json.output.to }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.output.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        740,
+        -80
+      ],
+      "id": "b5c3c871-aaeb-44a1-90f5-fbfcaacb00ae",
+      "name": "Send Email",
+      "webhookId": "a26f1051-d46e-4f8e-abba-c68804fc181a",
+      "credentials": {
+        "smtp": {
+          "id": "vp0B9xe6nxRPgC1n",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"subject\": \"메일 제목\",\n  \"text\": \"메일 내용\",\n  \"from\": \"nambaksa2mail@naver.com\",\n  \"to\": \"보낸 사람 메일 주소\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        140
+      ],
+      "id": "81fbbd44-7fca-444d-a8af-5da9f98a4ab3",
+      "name": "Structured Output Parser1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NaverEmail": {
+      "main": [
+        [
+          {
+            "node": "Naver Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Naver Fields": {
+      "main": [
+        [
+          {
+            "node": "MAIL DATA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MAIL DATA": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cal-Read": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cal-Write": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Fields": {
+      "main": [
+        [
+          {
+            "node": "MAIL DATA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GmailEmail": {
+      "main": [
+        [
+          {
+            "node": "Google Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01f9b3ca-6e7b-42d9-8c55-785752bfe740",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "qKTFSpAuzETmnMIq",
+  "tags": []
+}

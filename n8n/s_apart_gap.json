@@ -1,0 +1,1307 @@
+{
+  "name": "s-apart-gap",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -100
+      ],
+      "id": "20bc765c-3b2f-4cc6-866f-92d16a1cbe7b",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1496885c-1102-481f-9c1c-b12423f08059",
+              "name": "keyword",
+              "value": "광진구",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -140,
+        20
+      ],
+      "id": "0714c39a-831c-4940-a3f6-0f2410afe886",
+      "name": "Set Keyword"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e5d8269-79b3-4e36-8aea-515a34cc482f",
+              "name": "service_key",
+              "value": "EUdO0xMHpix627QSApdxT7DWXe0seqsXHs0aheVZR6C%2F%2F0jzSCvzTASWHENzlvVlKhzcGB%2BYd2DaXD3VB35dgQ%3D%3D",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -140,
+        -160
+      ],
+      "id": "56fd9186-15b2-4efa-b900-1db2f8e23e36",
+      "name": "Set ServiceKey"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        60,
+        -80
+      ],
+      "id": "1d156b9c-a182-4a9c-bd8a-e744ceb2f52e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "=https://apis.data.go.kr/1741000/StanReginCd/getStanReginCdList?serviceKey={{ $json.service_key }}&pageNo=1&numOfRows=3&type=json&locatadd_nm={{ $json.keyword }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        -80
+      ],
+      "id": "97f896d5-a3a0-4e09-bec7-513a1e07d6dd",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import json\nstr_data = _input.item.json.data\nj_data = json.loads(str_data)\nrow = j_data.get(\"StanReginCd\")[1].get(\"row\")\nresult = row[0].get(\"region_cd\")[0:5]\nreturn [{\n  \"code\": result\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        -80
+      ],
+      "id": "3b27b597-dad6-4224-9758-216c7ee285c3",
+      "name": "Get DongCode"
+    },
+    {
+      "parameters": {
+        "toolDescription": "API 툴",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        -20
+      ],
+      "id": "aa8101db-efd2-4515-a1ba-1075fdc1d3ac",
+      "name": "API TOOL"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"result\": \"API 호출 결과\",\n  \"date\": \"DEAL_YMD 값\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        860,
+        -20
+      ],
+      "id": "c9eefd2d-8051-4099-b922-f0eabe35881d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        -20
+      ],
+      "id": "82057028-4d1e-440e-b98c-89f98bee568c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import json\ns_result = _input.item.json.output.result\nj_result = json.loads(s_result)\nitem = j_result[0].get(\"response\").get(\"body\").get(\"items\").get(\"item\")\nreturn [{\n  \"trade_item\": item\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -220
+      ],
+      "id": "91c8b202-d8cf-4102-9031-f56533c56d4c",
+      "name": "TradeCode"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 API 호출 Agent 입니다.\n\n기본URL:\nhttps://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev\n\n파라메터:\nserviceKey={{ $('Set ServiceKey').item.json.service_key }}\nLAWD_CD={{ $json.code }}\npageNo=1\nnumOfRows=50\nDEAL_YMD=yyyMM\n\n------\n\n오늘날짜:\n{{ $now }}\n\n------\n\n[주요지침]\n- 위에서 주어진 파라메터와 기본URL을 조합하여 API TOOL을 사용하여 API를 호출 하세요.\n- DEAL_YMD 초기값은 오늘 날짜 기준 -1월 입니다. 예를 들어 오늘이 2025-12-11일 이면 초기값은 202511 입니다.\n- 만약 결과가 없으면 DEAL_YMD 값에서 월을 하나 줄여서 다시 시도합니다.\n- API 호출 결과가 나올때까지 최대 10회까지 반복합니다.\n- API 호출 결과는 반환받은 그대로를 JSON 형태로 변환하여 출력합니다. 절대 생략하거나 요약하거나 축소하거나 데이터를 가공하지 않습니다.\n\n[출력예시 JSON]\n{\n  \"result\": \"API 호출 결과\",\n  \"date\": \"DEAL_YMD 값\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        600,
+        -220
+      ],
+      "id": "b3ceaade-b70e-4210-a482-a0b7cead7a0c",
+      "name": "Trade AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 API 호출 Agent 입니다.\n\n기본URL:\nhttps://apis.data.go.kr/1613000/RTMSDataSvcAptRent/getRTMSDataSvcAptRent\n\n파라메터:\nserviceKey={{ $('Set ServiceKey').item.json.service_key }}\nLAWD_CD={{ $json.code }}\nDEAL_YMD=yyyMM\n\n------\n\n오늘날짜:\n{{ $now }}\n\n------\n\n[주요지침]\n- 위에서 주어진 파라메터와 기본URL을 조합하여 API 도구를 사용하여 API를 호출 하세요.\n- DEAL_YMD 초기값은 오늘 날짜 기준 -1월 입니다. 예를 들어 오늘이 2025-12-11일 이면 초기값은 202511 입니다.\n- 만약 결과가 없으면 DEAL_YMD 값에서 월을 하나 줄여서 다시 시도합니다.\n- API 호출 결과가 나올때까지 최대 10회까지 반복합니다.\n- API 호출 결과는 반환받은 그대로를 JSON 형태로 변환하여 출력합니다. 절대 생략하거나 요약하거나 축소하거나 데이터를 가공하지 않습니다.\n\n[출력예시 JSON]\n{\n  \"result\": \"API 호출 결과\",\n  \"date\": \"DEAL_YMD 값\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        620,
+        120
+      ],
+      "id": "f1dcde44-323d-430e-98d9-27d9e02fd012",
+      "name": "Rent AI Agent"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import json\ns_result = _input.item.json.output.result\nj_result = json.loads(s_result)\nitem = j_result[0].get(\"response\").get(\"body\").get(\"items\").get(\"item\")\nreturn [{\n  \"rent_item\": item\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        120
+      ],
+      "id": "97049f36-e93c-48de-a653-203141d28db7",
+      "name": "RentCode"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1180,
+        -100
+      ],
+      "id": "c64f1725-ff07-4403-908a-2e119ef0a05d",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "trades = _input.item.json.trade_item\nrents = _input.item.json.rent_item\nresults = []\nfor r in rents:\n  aptNm = r.get(\"aptNm\")\n  ssgCd = r.get(\"ssgCd\")\n  deposit = int(r.get(\"deposit\").replace(\",\", \"\"))\n  for t in trades:\n    t_aptNm = t.get(\"aptNm\")\n    t_ssgCd = t.get(\"ssgCd\")\n    t_dealAmount = int(t.get(\"dealAmount\").replace(\",\", \"\"))\n    if aptNm == t_aptNm and ssgCd == t_ssgCd:\n      t[\"deposit\"] = deposit\n      t[\"gap\"] = t_dealAmount - deposit\n      results.append(t)\n      break\nreturn [{\n  \"result\": results\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        -100
+      ],
+      "id": "39a32473-c178-4bbf-887a-62176bc3cd61",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=당신은 유능한 부동산 분석 AI Agent 입니다.\n주어진 데이터를 기준으로 주어진 임무를 수행하세요.\n\n------\n\n갭투자 목록:\n{{ JSON.stringify($json.result) }}\n\n------\n\n주요임무:\n- 해당 목록의 투자 정보를 보기 좋은 형태로 출력하세요.\n- Google Docs 문서 포맷을 사용합니다.\n- 마크다운 문법이나 HTML을 사용하지 않고 닷포인트 형식으로 정리하세요.\n- **내용** 과 같은 강조표시 사용금지.\n- **값이 없거나 빈문자열 항목, 정보는 출력하지 않습니다.**\n- 가독성이 좋아야 합니다.\n- 제목에는 {{ $now.format('yyyy-MM-dd') }} 정보가 들어가야 합니다.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1480,
+        -100
+      ],
+      "id": "31636139-a06b-4a9e-b2f5-0eed2d4715f2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"제목\",\n\t\"content\": \"내용\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1660,
+        100
+      ],
+      "id": "79a36e7b-db87-445a-9c9b-0d21fe09a05f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1480,
+        100
+      ],
+      "id": "72205900-010b-42a2-a3ce-fd5a5bfdecad",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.output.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        -100
+      ],
+      "id": "498e38fc-2a13-466d-ba08-df300b3a5d70",
+      "name": "Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "iC8KE6bsxXgkdCnW",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('AI Agent').item.json.output.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        -100
+      ],
+      "id": "cb8c28b5-ca50-4c42-82bc-dd6086c6ec08",
+      "name": "Google Docs1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "iC8KE6bsxXgkdCnW",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "TradeCode": [
+      {
+        "json": {
+          "trade_item": [
+            {
+              "aptDong": " ",
+              "aptNm": "더샵스타시티",
+              "aptSeq": "11215-2478",
+              "bonbun": "0227",
+              "bubun": "0007",
+              "buildYear": 2007,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "181,000",
+              "dealDay": 25,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 100.32,
+              "floor": 8,
+              "jibun": "227-7",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00262",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "03",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10500,
+              "umdNm": "자양동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "워커힐",
+              "aptSeq": "11215-11",
+              "bonbun": "0145",
+              "bubun": "0008",
+              "buildYear": 1978,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "347,500",
+              "dealDay": 30,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구, 서울 송파구",
+              "excluUseAr": 226.45,
+              "floor": 8,
+              "jibun": "145-8",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00637",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "더샵스타시티",
+              "aptSeq": "11215-2478",
+              "bonbun": "0227",
+              "bubun": "0007",
+              "buildYear": 2007,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "181,000",
+              "dealDay": 25,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 100.32,
+              "floor": 8,
+              "jibun": "227-7",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00262",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "03",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10500,
+              "umdNm": "자양동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "래미안파크스위트",
+              "aptSeq": "11215-4466",
+              "bonbun": "0668",
+              "bubun": "0000",
+              "buildYear": 2018,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "157,000",
+              "dealDay": 25,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.98,
+              "floor": 4,
+              "jibun": 668,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "광나루로",
+              "roadNmBonbun": "00545",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3005024,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10300,
+              "umdNm": "구의동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "현대3",
+              "aptSeq": "11215-16",
+              "bonbun": "0484",
+              "bubun": "0000",
+              "buildYear": 1990,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "155,000",
+              "dealDay": 30,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.97,
+              "floor": 18,
+              "jibun": 484,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로70길",
+              "roadNmBonbun": "00062",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112353,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "삼성광장1",
+              "aptSeq": "11215-101",
+              "bonbun": "0561",
+              "bubun": "0000",
+              "buildYear": 1987,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "139,700",
+              "dealDay": 29,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 66.03,
+              "floor": 7,
+              "jibun": 561,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로70길",
+              "roadNmBonbun": "00017",
+              "roadNmBubun": "00021",
+              "roadNmCd": 4112353,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "워커힐",
+              "aptSeq": "11215-11",
+              "bonbun": "0145",
+              "bubun": "0008",
+              "buildYear": 1978,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "285,000",
+              "dealDay": 24,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 162.41,
+              "floor": 10,
+              "jibun": "145-8",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00637",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "광나루현대",
+              "aptSeq": "11215-1",
+              "bonbun": "0567",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "127,500",
+              "dealDay": 30,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.92,
+              "floor": 6,
+              "jibun": 567,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로76길",
+              "roadNmBonbun": "00031",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112357,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "더샵스타시티",
+              "aptSeq": "11215-2478",
+              "bonbun": "0227",
+              "bubun": "0007",
+              "buildYear": 2007,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "260,000",
+              "dealDay": 26,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 163.53,
+              "floor": 21,
+              "jibun": "227-7",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00262",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "03",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10500,
+              "umdNm": "자양동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "현대3",
+              "aptSeq": "11215-73",
+              "bonbun": "0670",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "137,000",
+              "dealDay": 4,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.9,
+              "floor": 9,
+              "jibun": 670,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "뚝섬로56가길",
+              "roadNmBonbun": "00010",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112282,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10500,
+              "umdNm": "자양동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "워커힐",
+              "aptSeq": "11215-11",
+              "bonbun": "0145",
+              "bubun": "0008",
+              "buildYear": 1978,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "315,000",
+              "dealDay": 26,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 196,
+              "floor": 9,
+              "jibun": "145-8",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00637",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "일성파크",
+              "aptSeq": "11215-41",
+              "bonbun": "0099",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "90,500",
+              "dealDay": 29,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.96,
+              "floor": 6,
+              "jibun": 99,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "군자로12길",
+              "roadNmBonbun": "00046",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112068,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "법인",
+              "umdCd": 10900,
+              "umdNm": "군자동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "광장힐스테이트",
+              "aptSeq": "11215-3062",
+              "bonbun": "0582",
+              "bubun": "0000",
+              "buildYear": 2012,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "224,500",
+              "dealDay": 29,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.9,
+              "floor": 8,
+              "jibun": 582,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00537",
+              "roadNmBubun": "00017",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "02",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "광장현대9단지",
+              "aptSeq": "11215-2",
+              "bonbun": "0576",
+              "bubun": "0000",
+              "buildYear": 1999,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "125,000",
+              "dealDay": 28,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 59.97,
+              "floor": 15,
+              "jibun": 576,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로69길",
+              "roadNmBonbun": "00019",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112352,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "청구",
+              "aptSeq": "11215-14",
+              "bonbun": "0566",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "113,900",
+              "dealDay": 26,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 59.95,
+              "floor": 22,
+              "jibun": 566,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00503",
+              "roadNmBubun": "00023",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "우성1",
+              "aptSeq": "11215-55",
+              "bonbun": "0579",
+              "bubun": "0000",
+              "buildYear": 1988,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "90,000",
+              "dealDay": 22,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 51.57,
+              "floor": 5,
+              "jibun": 579,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "뚝섬로41길",
+              "roadNmBonbun": "00020",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112264,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10500,
+              "umdNm": "자양동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "구의현대2단지",
+              "aptSeq": "11215-25",
+              "bonbun": "0611",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "160,000",
+              "dealDay": 26,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 84.91,
+              "floor": 12,
+              "jibun": 611,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "광나루로56길",
+              "roadNmBonbun": "00032",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112040,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10300,
+              "umdNm": "구의동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "현대3",
+              "aptSeq": "11215-16",
+              "bonbun": "0484",
+              "bubun": "0000",
+              "buildYear": 1990,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "106,000",
+              "dealDay": 17,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구, 서울 서초구",
+              "excluUseAr": 59.67,
+              "floor": 1,
+              "jibun": 484,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로70길",
+              "roadNmBonbun": "00062",
+              "roadNmBubun": "00000",
+              "roadNmCd": 4112353,
+              "roadNmSeq": "01",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "청구",
+              "aptSeq": "11215-14",
+              "bonbun": "0566",
+              "bubun": "0000",
+              "buildYear": 1996,
+              "buyerGbn": "개인",
+              "cdealDay": "25.05.12",
+              "cdealType": "O",
+              "dealAmount": "107,800",
+              "dealDay": 30,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 59.95,
+              "floor": 4,
+              "jibun": 566,
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00503",
+              "roadNmBubun": "00023",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "00",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": " ",
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            },
+            {
+              "aptDong": " ",
+              "aptNm": "극동2",
+              "aptSeq": "11215-4",
+              "bonbun": "0218",
+              "bubun": "0001",
+              "buildYear": 1989,
+              "buyerGbn": "개인",
+              "cdealDay": " ",
+              "cdealType": " ",
+              "dealAmount": "172,500",
+              "dealDay": 22,
+              "dealMonth": 4,
+              "dealYear": 2025,
+              "dealingGbn": "중개거래",
+              "estateAgentSggNm": "서울 광진구",
+              "excluUseAr": 75.55,
+              "floor": 3,
+              "jibun": "218-1",
+              "landCd": 1,
+              "landLeaseholdGbn": "N",
+              "rgstDate": " ",
+              "roadNm": "아차산로",
+              "roadNmBonbun": "00552",
+              "roadNmBubun": "00000",
+              "roadNmCd": 3000002,
+              "roadNmSeq": "02",
+              "roadNmSggCd": 11215,
+              "roadNmbCd": 0,
+              "sggCd": 11215,
+              "slerGbn": "개인",
+              "umdCd": 10400,
+              "umdNm": "광장동"
+            }
+          ]
+        }
+      }
+    ],
+    "Trade AI Agent": [
+      {
+        "json": {
+          "output": {
+            "result": "[{\"response\":{\"header\":{\"resultCode\":\"000\",\"resultMsg\":\"OK\"},\"body\":{\"items\":{\"item\":[{\"aptDong\":\" \",\"aptNm\":\"더샵스타시티\",\"aptSeq\":\"11215-2478\",\"bonbun\":\"0227\",\"bubun\":\"0007\",\"buildYear\":2007,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"181,000\",\"dealDay\":25,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":100.32,\"floor\":8,\"jibun\":\"227-7\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00262\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"03\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10500,\"umdNm\":\"자양동\"},{\"aptDong\":\" \",\"aptNm\":\"워커힐\",\"aptSeq\":\"11215-11\",\"bonbun\":\"0145\",\"bubun\":\"0008\",\"buildYear\":1978,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"347,500\",\"dealDay\":30,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구, 서울 송파구\",\"excluUseAr\":226.45,\"floor\":8,\"jibun\":\"145-8\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00637\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"더샵스타시티\",\"aptSeq\":\"11215-2478\",\"bonbun\":\"0227\",\"bubun\":\"0007\",\"buildYear\":2007,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"181,000\",\"dealDay\":25,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":100.32,\"floor\":8,\"jibun\":\"227-7\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00262\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"03\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10500,\"umdNm\":\"자양동\"},{\"aptDong\":\" \",\"aptNm\":\"래미안파크스위트\",\"aptSeq\":\"11215-4466\",\"bonbun\":\"0668\",\"bubun\":\"0000\",\"buildYear\":2018,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"157,000\",\"dealDay\":25,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.98,\"floor\":4,\"jibun\":668,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"광나루로\",\"roadNmBonbun\":\"00545\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3005024,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10300,\"umdNm\":\"구의동\"},{\"aptDong\":\" \",\"aptNm\":\"현대3\",\"aptSeq\":\"11215-16\",\"bonbun\":\"0484\",\"bubun\":\"0000\",\"buildYear\":1990,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"155,000\",\"dealDay\":30,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.97,\"floor\":18,\"jibun\":484,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로70길\",\"roadNmBonbun\":\"00062\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112353,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"삼성광장1\",\"aptSeq\":\"11215-101\",\"bonbun\":\"0561\",\"bubun\":\"0000\",\"buildYear\":1987,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"139,700\",\"dealDay\":29,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":66.03,\"floor\":7,\"jibun\":561,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로70길\",\"roadNmBonbun\":\"00017\",\"roadNmBubun\":\"00021\",\"roadNmCd\":4112353,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"워커힐\",\"aptSeq\":\"11215-11\",\"bonbun\":\"0145\",\"bubun\":\"0008\",\"buildYear\":1978,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"285,000\",\"dealDay\":24,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":162.41,\"floor\":10,\"jibun\":\"145-8\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00637\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"광나루현대\",\"aptSeq\":\"11215-1\",\"bonbun\":\"0567\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"127,500\",\"dealDay\":30,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.92,\"floor\":6,\"jibun\":567,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로76길\",\"roadNmBonbun\":\"00031\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112357,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"더샵스타시티\",\"aptSeq\":\"11215-2478\",\"bonbun\":\"0227\",\"bubun\":\"0007\",\"buildYear\":2007,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"260,000\",\"dealDay\":26,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":163.53,\"floor\":21,\"jibun\":\"227-7\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00262\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"03\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10500,\"umdNm\":\"자양동\"},{\"aptDong\":\" \",\"aptNm\":\"현대3\",\"aptSeq\":\"11215-73\",\"bonbun\":\"0670\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"137,000\",\"dealDay\":4,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.9,\"floor\":9,\"jibun\":670,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"뚝섬로56가길\",\"roadNmBonbun\":\"00010\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112282,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10500,\"umdNm\":\"자양동\"},{\"aptDong\":\" \",\"aptNm\":\"워커힐\",\"aptSeq\":\"11215-11\",\"bonbun\":\"0145\",\"bubun\":\"0008\",\"buildYear\":1978,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"315,000\",\"dealDay\":26,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":196,\"floor\":9,\"jibun\":\"145-8\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00637\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"일성파크\",\"aptSeq\":\"11215-41\",\"bonbun\":\"0099\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"90,500\",\"dealDay\":29,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.96,\"floor\":6,\"jibun\":99,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"군자로12길\",\"roadNmBonbun\":\"00046\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112068,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"법인\",\"umdCd\":10900,\"umdNm\":\"군자동\"},{\"aptDong\":\" \",\"aptNm\":\"광장힐스테이트\",\"aptSeq\":\"11215-3062\",\"bonbun\":\"0582\",\"bubun\":\"0000\",\"buildYear\":2012,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"224,500\",\"dealDay\":29,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.9,\"floor\":8,\"jibun\":582,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00537\",\"roadNmBubun\":\"00017\",\"roadNmCd\":3000002,\"roadNmSeq\":\"02\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"광장현대9단지\",\"aptSeq\":\"11215-2\",\"bonbun\":\"0576\",\"bubun\":\"0000\",\"buildYear\":1999,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"125,000\",\"dealDay\":28,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":59.97,\"floor\":15,\"jibun\":576,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로69길\",\"roadNmBonbun\":\"00019\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112352,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"청구\",\"aptSeq\":\"11215-14\",\"bonbun\":\"0566\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"113,900\",\"dealDay\":26,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":59.95,\"floor\":22,\"jibun\":566,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00503\",\"roadNmBubun\":\"00023\",\"roadNmCd\":3000002,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"우성1\",\"aptSeq\":\"11215-55\",\"bonbun\":\"0579\",\"bubun\":\"0000\",\"buildYear\":1988,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"90,000\",\"dealDay\":22,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":51.57,\"floor\":5,\"jibun\":579,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"뚝섬로41길\",\"roadNmBonbun\":\"00020\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112264,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10500,\"umdNm\":\"자양동\"},{\"aptDong\":\" \",\"aptNm\":\"구의현대2단지\",\"aptSeq\":\"11215-25\",\"bonbun\":\"0611\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"160,000\",\"dealDay\":26,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":84.91,\"floor\":12,\"jibun\":611,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"광나루로56길\",\"roadNmBonbun\":\"00032\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112040,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10300,\"umdNm\":\"구의동\"},{\"aptDong\":\" \",\"aptNm\":\"현대3\",\"aptSeq\":\"11215-16\",\"bonbun\":\"0484\",\"bubun\":\"0000\",\"buildYear\":1990,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"106,000\",\"dealDay\":17,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구, 서울 서초구\",\"excluUseAr\":59.67,\"floor\":1,\"jibun\":484,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로70길\",\"roadNmBonbun\":\"00062\",\"roadNmBubun\":\"00000\",\"roadNmCd\":4112353,\"roadNmSeq\":\"01\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"청구\",\"aptSeq\":\"11215-14\",\"bonbun\":\"0566\",\"bubun\":\"0000\",\"buildYear\":1996,\"buyerGbn\":\"개인\",\"cdealDay\":\"25.05.12\",\"cdealType\":\"O\",\"dealAmount\":\"107,800\",\"dealDay\":30,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":59.95,\"floor\":4,\"jibun\":566,\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00503\",\"roadNmBubun\":\"00023\",\"roadNmCd\":3000002,\"roadNmSeq\":\"00\",\"roadNmSggCd\":11215,\"roadNmbCd\":\" \",\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"},{\"aptDong\":\" \",\"aptNm\":\"극동2\",\"aptSeq\":\"11215-4\",\"bonbun\":\"0218\",\"bubun\":\"0001\",\"buildYear\":1989,\"buyerGbn\":\"개인\",\"cdealDay\":\" \",\"cdealType\":\" \",\"dealAmount\":\"172,500\",\"dealDay\":22,\"dealMonth\":4,\"dealYear\":2025,\"dealingGbn\":\"중개거래\",\"estateAgentSggNm\":\"서울 광진구\",\"excluUseAr\":75.55,\"floor\":3,\"jibun\":\"218-1\",\"landCd\":1,\"landLeaseholdGbn\":\"N\",\"rgstDate\":\" \",\"roadNm\":\"아차산로\",\"roadNmBonbun\":\"00552\",\"roadNmBubun\":\"00000\",\"roadNmCd\":3000002,\"roadNmSeq\":\"02\",\"roadNmSggCd\":11215,\"roadNmbCd\":0,\"sggCd\":11215,\"slerGbn\":\"개인\",\"umdCd\":10400,\"umdNm\":\"광장동\"}]},\"numOfRows\":50,\"pageNo\":1,\"totalCount\":160}}}]",
+            "date": "202504"
+          }
+        }
+      }
+    ],
+    "Rent AI Agent": [
+      {
+        "json": {
+          "output": {
+            "result": "[{\"response\":{\"header\":{\"resultCode\":\"000\",\"resultMsg\":\"OK\"},\"body\":{\"items\":{\"item\":[{\"aptNm\":\"아크로리버\",\"buildYear\":2004,\"contractTerm\":\"25.07~27.07\",\"contractType\":\"신규\",\"dealDay\":21,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"20,000\",\"excluUseAr\":150.6416,\"floor\":13,\"jibun\":\"589-10\",\"monthlyRent\":420,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"구의동\",\"useRRRight\":\" \"},{\"aptNm\":\"경남\",\"buildYear\":1999,\"contractTerm\":\"25.08~27.08\",\"contractType\":\"신규\",\"dealDay\":29,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"50,000\",\"excluUseAr\":59.96,\"floor\":15,\"jibun\":641,\"monthlyRent\":0,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"자양동\",\"useRRRight\":\" \"},{\"aptNm\":\"강변현대하이엘\",\"buildYear\":2004,\"contractTerm\":\"25.04~27.04\",\"contractType\":\"갱신\",\"dealDay\":10,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"20,000\",\"excluUseAr\":130.89,\"floor\":7,\"jibun\":547,\"monthlyRent\":170,\"preDeposit\":\"20,000\",\"preMonthlyRent\":145,\"sggCd\":11215,\"umdNm\":\"구의동\",\"useRRRight\":\" \"},{\"aptNm\":\"센텀힐스한강\",\"buildYear\":2023,\"contractTerm\":\"25.05~27.05\",\"contractType\":\"갱신\",\"dealDay\":3,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"11,000\",\"excluUseAr\":16.39,\"floor\":7,\"jibun\":\"587-62\",\"monthlyRent\":28,\"preDeposit\":\"9,500\",\"preMonthlyRent\":31,\"sggCd\":11215,\"umdNm\":\"구의동\",\"useRRRight\":\" \"},{\"aptNm\":\"강변힐하우스\",\"buildYear\":2015,\"contractTerm\":\"25.05~27.05\",\"contractType\":\"신규\",\"dealDay\":7,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"11,300\",\"excluUseAr\":12.83,\"floor\":4,\"jibun\":\"596-1\",\"monthlyRent\":10,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"구의동\",\"useRRRight\":\" \"},{\"aptNm\":\"워커힐\",\"buildYear\":1978,\"contractTerm\":\"25.07~27.07\",\"contractType\":\"신규\",\"dealDay\":21,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"75,000\",\"excluUseAr\":196,\"floor\":10,\"jibun\":\"145-8\",\"monthlyRent\":0,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"광장동\",\"useRRRight\":\" \"},{\"aptNm\":\"현대파크빌\",\"buildYear\":2000,\"contractTerm\":\"25.06~27.06\",\"contractType\":\"신규\",\"dealDay\":18,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"75,000\",\"excluUseAr\":84.81,\"floor\":17,\"jibun\":577,\"monthlyRent\":0,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"광장동\",\"useRRRight\":\" \"},{\"aptNm\":\"극동2\",\"buildYear\":1989,\"contractTerm\":\"25.06~27.06\",\"contractType\":\"신규\",\"dealDay\":16,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"55,000\",\"excluUseAr\":75.55,\"floor\":1,\"jibun\":\"218-1\",\"monthlyRent\":0,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"광장동\",\"useRRRight\":\" \"},{\"aptNm\":\"청구\",\"buildYear\":1996,\"contractTerm\":\"25.04~27.04\",\"contractType\":\"갱신\",\"dealDay\":2,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"52,000\",\"excluUseAr\":59.95,\"floor\":12,\"jibun\":566,\"monthlyRent\":0,\"preDeposit\":\"45,000\",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"광장동\",\"useRRRight\":\" \"},{\"aptNm\":\"현대파크빌\",\"buildYear\":2000,\"contractTerm\":\"25.05~27.05\",\"contractType\":\"신규\",\"dealDay\":26,\"dealMonth\":4,\"dealYear\":2025,\"deposit\":\"20,000\",\"excluUseAr\":84.81,\"floor\":11,\"jibun\":577,\"monthlyRent\":270,\"preDeposit\":\" \",\"preMonthlyRent\":\" \",\"sggCd\":11215,\"umdNm\":\"광장동\",\"useRRRight\":\" \"}]},\"numOfRows\":10,\"pageNo\":1,\"totalCount\":467}}}]",
+            "date": "202504"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set ServiceKey",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set ServiceKey": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Keyword": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get DongCode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get DongCode": {
+      "main": [
+        [
+          {
+            "node": "Trade AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Rent AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API TOOL": {
+      "ai_tool": [
+        [
+          {
+            "node": "Trade AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Rent AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Trade AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Rent AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Trade AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Rent AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trade AI Agent": {
+      "main": [
+        [
+          {
+            "node": "TradeCode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rent AI Agent": {
+      "main": [
+        [
+          {
+            "node": "RentCode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TradeCode": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RentCode": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Google Docs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2e400f45-4bae-4621-bcfe-d9218be039f6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "jSvMqLsOc1uSQWbj",
+  "tags": []
+}

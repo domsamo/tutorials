@@ -1,0 +1,574 @@
+{
+  "name": "s-telegram-api",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        60
+      ],
+      "id": "8fbf5ba1-b930-475f-882f-b21ea49beaed",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e60fda75-8f8e-4381-8d43-0d888ef4d978",
+              "name": "bot_token",
+              "value": "7741663481:AAGChuUtsGg4Gr0ldGWPJRwRWqKhpP_Y5hY",
+              "type": "string"
+            },
+            {
+              "id": "7734b6e0-2f85-45fa-9e6e-62d9c6af27e1",
+              "name": "chat_id",
+              "value": "7198424709",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -60
+      ],
+      "id": "3a74c539-fb79-4514-9821-d274fb89aa91",
+      "name": "Set BOT TOKEN"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $('Set BOT TOKEN').item.json.bot_token }}/getUpdates",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "offset",
+              "value": "={{ $json.max_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        -60
+      ],
+      "id": "c34379c6-f1ea-4bdb-8fad-39d99cbd0311",
+      "name": "GetUpdates"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "ok = _input.item.json.ok\nresult = _input.item.json.result\nif not ok:\n  return [{\n    \"max_id\": 0\n  }]\ndatas = []\nmax_id = 0\nfor r in result:\n  uid = r.get(\"update_id\")\n  if uid > max_id:\n    max_id = uid\n  text = r.get(\"message\").get(\"text\", \"\")\n  datas.append(text)\nreturn [{\n  \"max_id\": max_id,\n  \"datas\": datas\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        -60
+      ],
+      "id": "5cf1c10a-8e5c-4832-98f0-0e9577a1b14b",
+      "name": "GetMaxUpdateID"
+    },
+    {
+      "parameters": {
+        "command": "=echo \"{{ $json.max_id }}\" >> /tmp/max_id.txt"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        460,
+        40
+      ],
+      "id": "e3d52fc7-b42d-4fba-907f-0fde3a2bf921",
+      "name": "Write MaxID"
+    },
+    {
+      "parameters": {
+        "command": "tail -n 1 /tmp/max_id.txt"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -60
+      ],
+      "id": "dce17cb0-951a-4a8c-be54-80e137263340",
+      "name": "Execute Command",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "error = _input.item.json.get(\"error\", \"\").strip()\nstdout = _input.item.json.get(\"stdout\", \"\").strip()\nif error:\n  return [{\n    \"max_id\": 0\n  }]\n\nreturn [{\n  \"max_id\": int(stdout) + 1\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -60
+      ],
+      "id": "d15cd2c2-5cc1-4972-b651-398306fb3149",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5c237ea-c537-4261-a61e-9117a5e0ea4f",
+              "leftValue": "={{ $json.max_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        280,
+        -60
+      ],
+      "id": "55b4400b-0c43-4ed3-9932-6266135a3952",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c61ad23-3518-483d-834c-eb6a10f5ca1c",
+              "name": "transcript",
+              "value": "={{ $json.parsed_subtitles.without_timestamp }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1480,
+        120
+      ],
+      "id": "bfc0b129-755b-4fc4-a3f9-5742cd7a5df6",
+      "name": "Set Transcript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.transcript }}\n\n------\n\n위의 유튜브 스크립트 내용을 짧게 요약해줘.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1640,
+        120
+      ],
+      "id": "f39cee9a-435c-4da0-8d36-97803f7bc273",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1640,
+        300
+      ],
+      "id": "6d9e58c0-c824-4d5b-b7bd-0019b037a4cf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d59d9e7-84fb-4363-bcd5-0358b4d7418c",
+              "name": "url",
+              "value": "={{ $json.datas.match(/https?:\\/\\/(www\\.)?(youtube\\.com|youtu\\.be)\\/[^\\s]+/)?.[0] || null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        40
+      ],
+      "id": "f5666d0d-04a3-4f21-9c91-79ef603a45d4",
+      "name": "Set URL"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $('Set BOT TOKEN').item.json.bot_token }}/sendMessage?chat_id={{ $('Set BOT TOKEN').item.json.chat_id }}&text={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        120
+      ],
+      "id": "818e1693-d7c4-4e41-b935-d0b0ed5e3c81",
+      "name": "Send Telegram"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:9012/extract_subtitles",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        120
+      ],
+      "id": "80f24b1c-d929-4f4d-912e-240b34030a63",
+      "name": "TranscriptAPI"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eb1cdb32-ea10-46e5-8bb6-759a0d2368dc",
+              "leftValue": "={{ $json.url === null }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1140,
+        40
+      ],
+      "id": "f132b190-842f-47c6-8e63-b8cb0df63b5f",
+      "name": "CheckYoutube"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "datas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        820,
+        40
+      ],
+      "id": "6e14756f-8985-4cc2-88e9-52d93ebd7bc5",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ded2eff5-872f-4bab-9ae6-0663e270cdd7",
+              "name": "datas",
+              "value": "={{ $('GetMaxUpdateID').item.json.datas }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        40
+      ],
+      "id": "9e59de6e-9ec2-471d-80bd-91177f27f364",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        -140
+      ],
+      "id": "f1b17c9a-9e7a-4eba-ad8d-40a8aeff7b66",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set BOT TOKEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set BOT TOKEN": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetUpdates": {
+      "main": [
+        [
+          {
+            "node": "GetMaxUpdateID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetMaxUpdateID": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "GetUpdates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Write MaxID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Transcript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set URL": {
+      "main": [
+        [
+          {
+            "node": "CheckYoutube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TranscriptAPI": {
+      "main": [
+        [
+          {
+            "node": "Set Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CheckYoutube": {
+      "main": [
+        [],
+        [
+          {
+            "node": "TranscriptAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write MaxID": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Set URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set BOT TOKEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a2f56e17-bea2-400e-9624-bc044a79fa72",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "kqspciOY8Izwl7Bi",
+  "tags": []
+}

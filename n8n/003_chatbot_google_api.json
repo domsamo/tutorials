@@ -1,0 +1,212 @@
+{
+  "name": "003-chatbot-google-api",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -120
+      ],
+      "id": "aa58745a-1f04-47b6-9280-09b414f9da31",
+      "name": "When chat message received",
+      "webhookId": "c61e935c-22e4-44ec-8d40-ffe099081074"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -80,
+        -120
+      ],
+      "id": "ea71b4eb-0af8-4e79-a43d-656c470221c1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        240
+      ],
+      "id": "40dfa250-c40b-4cd9-941f-dd589ba8c8ab",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        80
+      ],
+      "id": "928e9592-3817-4690-b9d8-f67c333a41a5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        300,
+        240
+      ],
+      "id": "03851e36-bdfd-4770-93c1-52a8903fd2e2",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "5uKfNuxnW7ffm7zR",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "검색 툴",
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "cx",
+              "valueProvider": "fieldValue",
+              "value": "a390d5e82797d4be6"
+            },
+            {
+              "name": "key",
+              "valueProvider": "fieldValue",
+              "value": "AIzaSyBQYnBuyEF4u3nuHbDTpfmWzkBYQ5bQBNY"
+            },
+            {
+              "name": "q"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        80
+      ],
+      "id": "d1a1861e-ff6f-47fa-8fac-acd414082280",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        80
+      ],
+      "id": "244d411a-e63a-4772-a28a-d33cd08a62ef",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9FrkRfbtspOImIho",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6faf0979-9d5f-417c-93c3-d84c9ca1a6e2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "L8DAagCAya3O5VzM",
+  "tags": []
+}

@@ -1,0 +1,495 @@
+{
+  "name": "022-youtube-rag",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -140
+      ],
+      "id": "f1057e5b-416b-4815-885b-baf9c8293391",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41ad4074-8e25-48f8-b6f1-0d25eb7ee4b0",
+              "name": "youtube_url",
+              "value": "https://www.youtube.com/@blographer/videos",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        -140
+      ],
+      "id": "5e33f5b3-0926-4936-a4c8-fc3bb4341b36",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.youtube_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        -140
+      ],
+      "id": "2da2558c-87a3-4845-9a8b-95a938a51d54",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import urllib.request\nimport urllib.error\nimport re\nimport json\n\ndef get_channel_videos(html):\n    # HTML에서 ytInitialData JSON 객체 추출\n    m = re.search(r\"var ytInitialData = ({.*?});\", html)\n    if not m:\n        m = re.search(r\"window\\['ytInitialData'\\] = ({.*?});\", html)\n    if not m:\n        print(\"ytInitialData를 찾을 수 없습니다.\")\n        return []\n    \n    try:\n        initial_data = json.loads(m.group(1))\n    except Exception as e:\n        print(\"JSON 파싱 에러:\", e)\n        return []\n    \n    videos = []\n    try:\n        tabs = initial_data[\"contents\"][\"twoColumnBrowseResultsRenderer\"][\"tabs\"]\n        for tab in tabs:\n            tab_renderer = tab.get(\"tabRenderer\")\n            if not tab_renderer:\n                continue\n            \n            # 'Videos' 혹은 '동영상' 탭을 찾음\n            title = tab_renderer.get(\"title\", \"\").lower()\n            if title not in (\"videos\", \"동영상\"):\n                continue\n            \n            content = tab_renderer.get(\"content\", {})\n            # 두 가지 렌더러를 지원: sectionListRenderer와 richGridRenderer\n            section_list = []\n            if \"sectionListRenderer\" in content:\n                section_list = content[\"sectionListRenderer\"].get(\"contents\", [])\n            elif \"richGridRenderer\" in content:\n                section_list = content[\"richGridRenderer\"].get(\"contents\", [])\n            else:\n                print(\"동영상 섹션 정보를 찾을 수 없습니다.\")\n                return []\n            \n            for section in section_list:\n                # sectionListRenderer의 경우\n                if \"itemSectionRenderer\" in section:\n                    items = section[\"itemSectionRenderer\"].get(\"contents\", [])\n                # richGridRenderer의 경우\n                elif \"richItemRenderer\" in section:\n                    # richItemRenderer 안에 content에 videoRenderer가 포함됨\n                    items = [section[\"richItemRenderer\"].get(\"content\", {})]\n                else:\n                    continue\n\n                for item in items:\n                    video_renderer = None\n                    if \"gridVideoRenderer\" in item:\n                        video_renderer = item[\"gridVideoRenderer\"]\n                    elif \"videoRenderer\" in item:\n                        video_renderer = item[\"videoRenderer\"]\n                    \n                    if video_renderer:\n                        video_id = video_renderer.get(\"videoId\")\n                        title_runs = video_renderer.get(\"title\", {}).get(\"runs\", [])\n                        video_title = title_runs[0][\"text\"] if title_runs else \"\"\n                        video_url = f\"https://www.youtube.com/watch?v={video_id}\" if video_id else None\n                        videos.append({\n                            \"id\": video_id,\n                            \"title\": video_title,\n                            \"url\": video_url\n                        })\n            break  # 동영상 탭을 찾았으면 더 이상 반복하지 않음\n    except Exception as e:\n        print(\"동영상 데이터 파싱 중 에러 발생:\", e)\n        return []\n    \n    return videos\n  \nhtml = _input.item.json.data\nvideos = get_channel_videos(html)\nyoutube_url = _('Edit Fields').item.json.youtube_url\nreturn {\n  \"url\": youtube_url,\n  \"videos\": videos\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        -140
+      ],
+      "id": "75761bf5-f64e-4d14-a47d-a8276fa95069",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "videos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -140
+      ],
+      "id": "5b3a0ff9-e24f-4241-beee-3ab77cbc74e2",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        500,
+        -140
+      ],
+      "id": "04b4f1ae-fdbe-49a3-bda0-0890e80c6b1e",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "youtubeURL": "={{ $json.url }}",
+        "language": "ko"
+      },
+      "type": "n8n-nodes-youtube-transcript-api.youtubeTranscriptApi",
+      "typeVersion": 1,
+      "position": [
+        700,
+        -40
+      ],
+      "id": "c3710b7e-98c2-444c-8d41-e0ad7cb40b76",
+      "name": "Youtube Transcript"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "youtube",
+          "mode": "list",
+          "cachedResultName": "youtube"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        -40
+      ],
+      "id": "807d303a-590b-445e-9bcc-8b1f19b11aae",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "eKwWzeK4oM1LlaZ2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        840,
+        120
+      ],
+      "id": "f87fc9fe-edca-47c1-a3a6-1ad307859069",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "=제목:{{ $('Youtube Transcript').item.json.title }}\n내용:{{ $('Youtube Transcript').item.json.transcript }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "id",
+                "value": "={{ $('Youtube Transcript').item.json.id }}"
+              },
+              {
+                "name": "url",
+                "value": "={{ $('Youtube Transcript').item.json.url }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        960,
+        120
+      ],
+      "id": "41aa11a4-5af4-41f6-8ef0-3958c0742bae",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 5000,
+        "chunkOverlap": 500,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        940,
+        240
+      ],
+      "id": "8e7cd11a-c59a-48c9-a5c5-201444eefddb",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        120
+      ],
+      "id": "99b0a543-1ecc-4733-bb54-c2859b40ff98",
+      "name": "When chat message received",
+      "webhookId": "566c5f54-5289-49c5-97a5-39896a50874d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.5,
+      "position": [
+        -80,
+        120
+      ],
+      "id": "234bcb12-4b24-4621-90dd-bbc3caeb9b32",
+      "name": "Question and Answer Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        320
+      ],
+      "id": "0425e596-2534-422f-98d0-b584b4b149f3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        100,
+        260
+      ],
+      "id": "1539798c-cb77-48c6-83dd-5a39c641aad2",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "youtube",
+          "mode": "list",
+          "cachedResultName": "youtube"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        40,
+        400
+      ],
+      "id": "948f63db-e991-44bf-8f23-e7d213d58ee7",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "eKwWzeK4oM1LlaZ2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        540
+      ],
+      "id": "b56b0ca8-aa29-48af-ac2b-fae970ad246b",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Youtube Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube Transcript": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e7ba4793-70cb-41cb-b8b4-7964ef2e6c1b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "ZP5rPjJt0FyoV3iP",
+  "tags": []
+}

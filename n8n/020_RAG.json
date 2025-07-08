@@ -1,0 +1,749 @@
+{
+  "name": "020-RAG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -200
+      ],
+      "id": "0421fa94-a077-4312-9e61-af9f058de713",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1S35ySmCNiIlnrZ32qsnOBSj1MPzixvqu",
+            "mode": "list",
+            "cachedResultName": "PDF-BLOG",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1S35ySmCNiIlnrZ32qsnOBSj1MPzixvqu"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -380,
+        -200
+      ],
+      "id": "4cca8f67-681b-49ae-8d63-7fc4d6d5169c",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4OBZAT5E9KgSWAVV",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1AQ6k3vsBJqX6EGRJWzHKudI7NPh9C01F",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -220,
+        -200
+      ],
+      "id": "20f6434b-24cb-4276-8ebe-aec88cc61bcd",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4OBZAT5E9KgSWAVV",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -200
+      ],
+      "id": "0e884fd6-d2e6-467b-a3e6-a874dba10711",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "blog",
+          "mode": "list",
+          "cachedResultName": "blog"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        -200
+      ],
+      "id": "5107a689-1ed0-40e0-86b8-a8bd31e1cade",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -20
+      ],
+      "id": "d0d59a84-88ad-4e20-b868-33d885a88a22",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -20
+      ],
+      "id": "b8a22c8d-11ef-46a1-aed8-ff82aa7752b8",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        200,
+        120
+      ],
+      "id": "4427cedb-08f4-44df-9564-4fe2da9ba371",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        100
+      ],
+      "id": "3a5c25fc-6481-4a05-b496-16fed261db76",
+      "name": "When chat message received",
+      "webhookId": "8806824e-bdd5-465b-ab99-083a9a797d19"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.5,
+      "position": [
+        -320,
+        100
+      ],
+      "id": "ae9153ac-e9a5-47b7-8b27-f1520c132649",
+      "name": "Question and Answer Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -360,
+        300
+      ],
+      "id": "c47eee98-e1df-40f4-9d3e-5f148421299b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        280
+      ],
+      "id": "0cce38ae-3d40-49f7-84d7-9a2142f6b645",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "blog",
+          "mode": "list",
+          "cachedResultName": "blog"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        -260,
+        400
+      ],
+      "id": "a84c4d23-f84f-473d-a80f-3b8efba9521a",
+      "name": "Qdrant Vector Store1",
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        520
+      ],
+      "id": "8aab55dd-1e8a-4aaf-a513-303af9e1ec40",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {}
+      }
+    ],
+    "Google Drive": [
+      {
+        "json": {
+          "id": "1AQ6k3vsBJqX6EGRJWzHKudI7NPh9C01F",
+          "name": "초간편_볶음우동_만드는법_해피투게더_황정면_레시피.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "13vBb531-KzNx0uJ7dpKvcjb6DYsIjrST",
+          "name": "오이무침_맛살샐러드_만드는_법_초간단_맛살요리.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1JUOWUWViVv-YFutqu9M71vzQwkJdoekR",
+          "name": "짜파게티_맛있게_끓이는_법_짜파게티_계란과의_만남.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1AHBVJ_0WVU95KL41wZTecsZTFJQnMI11",
+          "name": "참짜면_해피투게더_야간매점_참짜면_레시피_후기_참짜면_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "12zqdSTye4vYKY8Pdy_CID4Z6Mi09NmTj",
+          "name": "스파게티만드는법_영양_만점_토마토_스파게티.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1n7KuXWkXzpdCPXd2NPGjJ1zEoPwWFW1w",
+          "name": "오뎅볶음_아이반찬_간장오뎅볶음_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "109BEV3MxbcEtE1RfrKSw7sKHOCrRplbF",
+          "name": "짜플_간단한_야식_짜플_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1PTXa026uLNBbiVScH-IkzorDJIZNd5md",
+          "name": "옥수수맛있게삶는법_삶은_옥수수_보관법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1TUIx2QpAFKocuQspGgUnM_x1ksKyhlYd",
+          "name": "아사이베리를_아시나요_영양_과실_아사이베리_효능_-_보뚜_아사이베리.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1M-aISEv-tvacR0veiPkV2X5F96nOT0KA",
+          "name": "쏘세지_야채볶음_-_아이반찬_쏘야만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1a6FXSYD6wqDyNtUoEA63uJN6UqmKWulJ",
+          "name": "쇠고기무국_끓이는법_쇠고기국_맛있게_끓이는_법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1q1Xui2lP_sPQF2T_MIwowjaW5N6Hym7R",
+          "name": "참치김밥만드는법_김밥_맛있게_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1vPxOb6b4Vtvh8M51TKKdm-i2s98i04FY",
+          "name": "해피투게더_야간매점_배드걸피자_또띠아요리.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1dMm74iUt7coVnlwWyhvp90zLP5FiUivF",
+          "name": "스파게티만드는법_토마토_스파게티_맛있게_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "13F_-5dFeXms_gmEz-nN8Gx2AlWuzz_z8",
+          "name": "카레_라면_야식추천_맛있는_카레라면_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1KaFgblssc1K83gpW6mXR1dZC1rTRwe0A",
+          "name": "전복손질법_전복구이_전복_버터구이_레시피.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1GqeI0QAji_8ncaJhBeYHqQ7wfKNIninY",
+          "name": "콘빙수_해피투게더_야간매점_데니안의_콘빙수_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1MF7--4nyr6EgcxkoRTyaaOCOkanF3l71",
+          "name": "진짜사나이_마법의_소스_맛다시_맛다시_비빔밥_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "104_9lvlXYM0X5RczURhnkR5gRKPU9QaW",
+          "name": "집에서_스테이크_만들기_후라이팬_스테이크_맛있게_굽기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1wJA_O74uJFB847wYZiwpaBjNtQWSGs_V",
+          "name": "토스트만드는법_맛있는_토스트_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1jibQo21ARWWdleJEEG2ZtY62OQty7D5R",
+          "name": "어묵탕_어묵국수만들기_오뎅국수_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1HoySgXZTgoBPahDNGLrP18ZZkAgsnP_y",
+          "name": "해피투게더_야간매점_창난밥_레시피.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1i27Ll_9yJTN_KFT5VSFrzuieo3jR6SuH",
+          "name": "진짜사나이_혁스도그_레시피_혁스도그_만드는법_집에서_핫도그_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1wp8oLGY9ftOfRvdOiW_XI6-4NoI9N2Zi",
+          "name": "소고기_장조림_맛있게_만드는_법_장조림_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1vGqsWgcAe0etmNwjQkDS0zDarv5XTExN",
+          "name": "떡꼬치_만드는법_떡꼬치_소스_만드는법_-_아이들_간식의_절대_강자.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1XF6CgbrjPsWepTFJ7PqpVTmAPS2bRARZ",
+          "name": "김치볶음밥_맛있게_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1dJARnZN4_e5zUWNWTwwLIzp-ndTBlv9R",
+          "name": "닭봉간장조림_닭봉조림닭날개간장조림_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1rUfIHkMSticVNQhICq6zG6xt1fQPEBjD",
+          "name": "백숙_맛있게_끓이는법_닭백숙만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1pVwd-mn0wUdtVOz7Ssi3-ZjOpODbbUV6",
+          "name": "소불고기맛있게만드는법_비법_불고기_양념만드는_법으로_불고기_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1bdBuOND9y-66COvPmQIgxbydZXVz8gkO",
+          "name": "닭한마리_칼국수_닭칼국수만드는법_-_집에서_먹는_겨울철_보양식.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1dn8dr2VWN0FeXrbpa5ew45oYXUlUHWmg",
+          "name": "삼겹살요리_콜라_삼겹살_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1_kozDART4aXzuxYLCHFs42LPo5v3EIi5",
+          "name": "김치볶음_볶음김치_만드는법_-_김치요리.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1W4RPW9zgOGBFT5CsI8LPcO86HStlo1UR",
+          "name": "달고나_만드는방법_달고나_만들기_세트로_추억의_뽑기_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1EMRbyIMhYh1SV36bxumSkk6VGUb5yx7h",
+          "name": "닭도리탕_만드는법_닭볶음탕_닭도리탕.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1JN0WrDsAI-0Uwc_xGeeCFNFigWnXdQ8f",
+          "name": "부대찌개_부대찌개_맛있게_끓이는법_부대찌개_레시피.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1D0XxdPRkcHp9T1JSibVtlQ0ppNwOe0OL",
+          "name": "맛있는_제육볶음_제육볶음_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1xwilVTN1b3gzep-En0u8eisMQcUVQ3YH",
+          "name": "레몬에이드만드는법_여름철_시원한_음료수_레몬에이드만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1FBqofG7KRkec1-oRHk_j7h5NGAgpaaNc",
+          "name": "김밥맛있게_만드는법_집에서_직접_김밥만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1BxJT9tOJKinKAKthW6_WGu0s70XAmEE_",
+          "name": "김치부침개_맛있게_하는법_김치부침개_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1QICW34k1r46oiVKPIFvooPonn6UC4_a7",
+          "name": "미역국_맛있게_끓이는_법_흰쌀밥에_미역국_한그릇_소고기_미역국_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1ywHcteNMN5whfOwzBqxbZYdQ9bmdHx92",
+          "name": "라면땅_만드는법_간단하고_간편한_간식_라면땅만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1Kmjv9whUdpuvp9hLACW8NjQ_KumToA3r",
+          "name": "맛있는_카레만드는법_카레라이스.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1T7HcDoTNADb8Lk_TxJgaRuOsU5H-UHEi",
+          "name": "닭백숙_맛있게_끓이는법_초간단_닭백숙_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1S_tIWQUktcpL44bMCUQfyoW0zj94R3pA",
+          "name": "볶음우동_만드는법_-_해피투게더_야간매점_다솜면.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1ye77P9dbpMwvku8NYKYUXwcAXoHPQuLR",
+          "name": "맛있는_돼지갈비찜_갈비찜_만드는_법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1FYsH3McApcFqUvtSohunQhpAzZaIO-Br",
+          "name": "깐풍만두_레시피_해피투게더_깐풍만두_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1Tk5QSsCoHbr9PxwvaQtOlDgJCKM2valT",
+          "name": "소고기_미역국_맛있게_끓이는법_미역국_끓이는_방법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1qd0IJZWUelrByRdluNs7RMFlVGt8EQ2e",
+          "name": "떡만두국_맛있게_끓이는법_소고기_떡국_만드는법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1O7eThRxyYuF1rPbe7Vjtlx9a7PgauelG",
+          "name": "군대리아_집에서_진짜사나이_군대리아_만들기.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "13Dzh7rpW47e2j9CpRc4pum1hZque0vSG",
+          "name": "간장떡볶이_초간단_간장떡볶이_맛있게_만드는_법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1uqjtMyCXi0mP0RZmNE56NtvgcNt5tPoi",
+          "name": "골빔면_골뱅이와_비빔면의_새로운_이름_골빔면_레시피.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1pzjzJIaeClIbPWTAZ51TRO14c9zGC8iS",
+          "name": "계란_삶는법_계란_삶는_시간.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "18qTz6XZ1B3vRBgVSGT3wrpQsT4zrT1gq",
+          "name": "골뱅이_비빔면_골빔면은_가라_이젠_풀무원_골뱅이비빔면.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "1emztg2av4KgJMtBHqY0du976ENn4kNf9",
+          "name": "고구마맛탕_맛탕_만드는법_고구마_맛탕_쉽게_만드는_방법.pdf"
+        }
+      },
+      {
+        "json": {
+          "id": "111KxWD0UvSvNNIHIH5Wli2ytCqXTQ488",
+          "name": "계란찜_맛있는_뚝배기_계란찜_만드는법.pdf"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5489768c-9cca-40b7-a976-fc1f34724091",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "oZlPfGSrIrLJzaYa",
+  "tags": []
+}

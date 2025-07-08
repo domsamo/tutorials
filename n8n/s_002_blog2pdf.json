@@ -1,0 +1,654 @@
+{
+  "name": "s-002-blog2pdf",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c3238dfc-fc5c-430a-957d-0c81501ca1f4",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "181f1082-ec65-4293-9f15-62894d97a572",
+              "name": "blogID",
+              "value": "nkj2001",
+              "type": "string"
+            },
+            {
+              "id": "fc02c069-992a-4c70-aba2-bb89beff6a92",
+              "name": "categoryno",
+              "value": "84",
+              "type": "string"
+            },
+            {
+              "id": "fa5f950f-f809-467c-b930-9772cb0e5b29",
+              "name": "pageCount",
+              "value": "2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        0
+      ],
+      "id": "df58da42-d05b-400a-8b8c-44c61f6082b8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "output = []\nnaver_id = _('Edit Fields').item.json.blogID\ncategory_no = _('Edit Fields').item.json.categoryno\npage_count = _('Edit Fields').item.json.pageCount\n\nurl = f\"https://m.blog.naver.com/api/blogs/{naver_id}/post-list?categoryNo={category_no}&itemCount=30&userId=nambaksa2mail\"\n\nfor i in range(int(page_count)):\n  output.append({\n    \"url\": f\"{url}&page={i+1}\"\n  })\n\nreturn output"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "0ebafb27-6e68-45d2-a90e-8cc6c31d6646",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "referer",
+              "value": "=https://m.blog.naver.com/{{ $('Edit Fields').item.json.blogID }}?categoryNo={{ $('Edit Fields').item.json.categoryno }}&from=postList&tab=1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ],
+      "id": "35def1ef-5f48-4a97-925b-09e10acd9298",
+      "name": "Get Blog List"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "result.items"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        620,
+        0
+      ],
+      "id": "f1503274-7d1c-47c2-8644-07dd84e1faa7",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        780,
+        0
+      ],
+      "id": "a3f5e0ad-7d8a-4c6a-999d-67fa04757a30",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        940,
+        0
+      ],
+      "id": "95daf55f-3d40-484c-ae9d-6267f2eb9b41",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "=https://m.blog.naver.com/PostView.naver?blogId={{ $('Loop Over Items').item.json.domainIdOrBlogId }}&logNo={{ $('Loop Over Items').item.json.logNo }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        100
+      ],
+      "id": "2878c663-b8f7-496b-b89b-83fb6400dc7b",
+      "name": "PostView"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        100
+      ],
+      "id": "fcf90b0e-3273-47e6-aa2f-811f6d29f4da",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "content",
+              "cssSelector": "div.post_ct",
+              "returnValue": "html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1480,
+        100
+      ],
+      "id": "c8b63466-1ef5-4329-8f5b-7579382a9b8d",
+      "name": "GetContent"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "content",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "image",
+              "cssSelector": "span._img.fx",
+              "returnValue": "attribute",
+              "attribute": "thumburl",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1640,
+        100
+      ],
+      "id": "0d217e9f-d2c4-4f07-b0a8-d9ccee22f384",
+      "name": "GetAllImages"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image }}w2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        -60
+      ],
+      "id": "90e28be2-8ec9-4e19-84fd-069008635e94",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        -60
+      ],
+      "id": "adf0c444-8b86-4928-a83c-b76c75743c40",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAKhGSJFkW6JMZ54OTWs0pyCbRTSc-tlBk",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\":[\n        {\n          \"inline_data\": {\n            \"mime_type\":\"image/jpeg\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        },\n        {\"text\": \"이 이미지에 대해 한글로 설명해주세요.\"}\n    ]\n  }]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2280,
+        -60
+      ],
+      "id": "821439f0-c19c-4624-b414-537cceb3f4d6",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8c2f7ae-7949-4f1d-af25-d933fc2eda3c",
+              "name": "content",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2440,
+        -60
+      ],
+      "id": "f8926139-c03f-4a20-959a-620fcad6be40",
+      "name": "Img2Txt"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2000,
+        180
+      ],
+      "id": "1daf8f1c-0fbc-4671-9ff5-1b4f8a067f11",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import re\nimport unicodedata\n\nresults = []\n\nfor item in items:\n    original = item[\"json\"].get(\"titleWithInspectMessage\", \"default\")\n\n    # 유니코드 정규화\n    normalized = unicodedata.normalize('NFKD', original)\n\n    # 파일명에 쓸 수 없는 문자 제거 (한글/영문/숫자/공백/언더스코어/하이픈만 남김)\n    safe = re.sub(r'[^\\w\\s-]', '', normalized)\n\n    # 공백을 언더스코어로, 중복된 언더스코어 정리\n    safe = re.sub(r'\\s+', '_', safe)\n    safe = re.sub(r'_+', '_', safe)\n    safe = safe.strip('_')\n\n    # 너무 긴 파일명 제한\n    safe = safe[:100]\n\n    results.append({\n        \"json\": {\n            \"safe_filename\": safe\n        }\n    })\n\nreturn results"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        100
+      ],
+      "id": "f289a064-6e55-4645-9e1c-1e9a37ca7839",
+      "name": "FILENAME"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:9883/render",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/html"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/html",
+        "body": "={{ $json.results }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        180
+      ],
+      "id": "d50b9ab9-3d0e-40bb-9e58-a876739caed2",
+      "name": "HTML2PDF"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "from io import BytesIO\nimport re\n\n# 정확히 EXIF 들어간 table만 제거\nexif_table_pattern = re.compile(\n    r'<table[^>]*>[\\s\\S]{0,1500}?(Canon|Nikon|Sony|ISO\\s?\\d+|Flash\\sFired|mm|F\\d+\\.\\d+|eV|Manual|Auto WB|CenterWeightAverage)[\\s\\S]{0,1500}?<\\/table>',\n    flags=re.IGNORECASE\n)\n\n# 문자열 html에서 이미지를 설명으로 변환하는 함수\ndef replace_image_spans(html: str, replacements: list[dict]) -> str:\n  result = html\n  for r in replacements:\n      # 이미지 URL을 정규식 안전하게 이스케이프\n      escaped_url = re.escape(r.json.get(\"image\"))\n      # 해당 span 태그를 정규식으로 잡음\n      pattern = rf'<span[^>]*thumburl=[\"\\']{escaped_url}[\"\\'][^>]*><\\/span>'\n      # 설명으로 치환\n      replacement = f'<p><em>[[{r.json.get(\"content\")}]]</em></p>'\n      result = re.sub(pattern, replacement, result)\n\n  #최종 결과 반환\n  return result\n\nhtml = _('GetContent').item.json.content\nreplacements = _input.all()\nfinal_html = replace_image_spans(html, replacements)\n\nfinal_html = re.sub(exif_table_pattern, '', final_html)\n\n# HTML → 텍스트 정리\nplain_text = final_html\nplain_text = plain_text.replace('&nbsp;', ' ')\nplain_text = plain_text.replace('\\\\n', '\\n')\nplain_text = re.sub(r'<[^>]+>', '', plain_text)  # 태그 제거\nplain_text = re.sub(r'\\n{3,}', '\\n\\n', plain_text)  # 3번 이상 줄바꿈 → 2번\nplain_text = re.sub(r'(\\s*\\n\\s*){3,}', '\\n\\n', plain_text)  # 줄바꿈+공백 섞인 것\nplain_text = plain_text.strip()\n\nreturn [{\n  \"results\": final_html.strip()\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        180
+      ],
+      "id": "96e0550d-181a-4509-80c2-1da63bfe9547",
+      "name": "Replace IMG2TXT"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('FILENAME').first().json.safe_filename }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1-I7AyqFN_DmEpWaPIUscs5I17Cmb6uDs",
+          "mode": "list",
+          "cachedResultName": "PDF-NEW",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1-I7AyqFN_DmEpWaPIUscs5I17Cmb6uDs"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2480,
+        180
+      ],
+      "id": "c3a483c4-33cc-4106-b071-03cb31b8dd75",
+      "name": "Upload PDF",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4OBZAT5E9KgSWAVV",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1160,
+        -120
+      ],
+      "id": "caaa4fd6-57a0-460b-bf68-54dabc2927e4",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get Blog List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Blog List": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FILENAME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostView": {
+      "main": [
+        [
+          {
+            "node": "GetContent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetContent": {
+      "main": [
+        [
+          {
+            "node": "GetAllImages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetAllImages": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Img2Txt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Img2Txt": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Replace IMG2TXT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILENAME": {
+      "main": [
+        [
+          {
+            "node": "PostView",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace IMG2TXT": {
+      "main": [
+        [
+          {
+            "node": "HTML2PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML2PDF": {
+      "main": [
+        [
+          {
+            "node": "Upload PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PDF": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "62abbdf7-f91a-47a0-8918-1e08120f0dcf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "xMdZHo8yYQVcrQEi",
+  "tags": []
+}

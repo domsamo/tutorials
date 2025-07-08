@@ -1,0 +1,148 @@
+{
+  "name": "023-mcp",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=당신은 실시간 정보를 검색하기 위해 도구를 동적으로 통합하고 실행할 수 있는 고도로 효율적인 AI 자동화 어시스턴트입니다.\n\n- 항상 도구를 실행하기 전에 사용 가능한 도구 목록을 먼저 확인하세요.\n\n- 도구가 사용자 쿼리에 가장 관련성이 높은 것을 기반으로 선택되었는지 확인하십시오.\n\n- 도구 목록을 나열한 후에만 작업에 가장 적합한 도구를 자동으로 결정하고 실행하십시오.\n\n- MCP도구는 연속적으로 요청하지 않고 반드시 요청된 결과가 반환되면 순차적으로 수행해야 합니다."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -140,
+        -140
+      ],
+      "id": "953b84f8-968a-44ae-bca2-3f7f52b55ab9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        -140
+      ],
+      "id": "13ea135a-0a42-4b67-8fd1-db807293455f",
+      "name": "When chat message received",
+      "webhookId": "b2cabc86-5595-4cdf-8e86-4bacae889779"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        60
+      ],
+      "id": "c72200f8-7e93-4653-9111-7b2d0e719893",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://a1da-14-56-157-195.ngrok-free.app/mcp/2c1dbc5c-d3c1-4caf-8d45-630fd5bf5e02/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        20,
+        80
+      ],
+      "id": "848bd019-6374-4cea-9b0c-281a0ff15e0d",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-5-sonnet-20241022",
+          "mode": "list",
+          "cachedResultName": "Claude 3.5 Sonnet (New)"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        60
+      ],
+      "id": "21dab3a8-36ff-48ec-bd56-a29f48a94d89",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "NKHX09AnnDh6iyBZ",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "61358f4c-287c-4587-8370-87610b6f29c7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "8UhVOSofU2DNxm8o",
+  "tags": []
+}

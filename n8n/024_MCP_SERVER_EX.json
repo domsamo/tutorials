@@ -1,0 +1,656 @@
+{
+  "name": "024-MCP-SERVER-EX",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "2c1dbc5c-d3c1-4caf-8d45-630fd5bf5e02"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -140
+      ],
+      "id": "b2e0505b-1ad3-4bbe-98b0-d4d12ec2d635",
+      "name": "MCP Server Trigger",
+      "webhookId": "2c1dbc5c-d3c1-4caf-8d45-630fd5bf5e02"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -100,
+        100
+      ],
+      "id": "fce0699b-bc17-4e24-8dbd-8c008e07cf24",
+      "name": "Get Gmail",
+      "webhookId": "e0c6237b-06e2-43f4-8512-53a66fca501f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OIZzc4JtAsYF8Ma4",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        20,
+        100
+      ],
+      "id": "5484442e-377a-4211-82a3-da13fada74db",
+      "name": "Send Gmail",
+      "webhookId": "abccb696-66c9-4848-b4d9-6a374d2845b0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OIZzc4JtAsYF8Ma4",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1362874778209489097",
+          "mode": "list",
+          "cachedResultName": "테스트서버",
+          "cachedResultUrl": "https://discord.com/channels/1362874778209489097"
+        },
+        "sendTo": "user",
+        "userId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('User', ``, 'string') }}",
+          "mode": "id"
+        },
+        "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discordTool",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        80
+      ],
+      "id": "80019e5d-a3c3-47bb-8162-dbd6202ae795",
+      "name": "Send Discord",
+      "webhookId": "0735110f-7eea-4e6d-9a34-62546d4a6762",
+      "credentials": {
+        "discordBotApi": {
+          "id": "ln7XBsAuGcex2ZCt",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N_TEST"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        140,
+        100
+      ],
+      "id": "a398d8c7-8635-4281-90ee-d483f1838b16",
+      "name": "Create Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "irKVjHpfenl4xbbA",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "N8N_TEST"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        100
+      ],
+      "id": "c2012f71-78b8-4963-9035-69659469fa57",
+      "name": "Get Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "irKVjHpfenl4xbbA",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "web_search_tool",
+        "description": "웹 검색 도구",
+        "workflowId": {
+          "__rl": true,
+          "value": "5psLXk247CweYOkM",
+          "mode": "list",
+          "cachedResultName": "004-1-search"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        380,
+        100
+      ],
+      "id": "09b3880a-e191-490d-b6bb-56dbf05bbcec",
+      "name": "WebSearch"
+    },
+    {
+      "parameters": {
+        "resource": "member",
+        "guildId": {
+          "__rl": true,
+          "value": "1362874778209489097",
+          "mode": "list",
+          "cachedResultName": "테스트서버",
+          "cachedResultUrl": "https://discord.com/channels/1362874778209489097"
+        },
+        "after": "0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discordTool",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        80
+      ],
+      "id": "7174da15-9f4d-4b33-9719-403683a04ab1",
+      "name": "Get Member Discord",
+      "webhookId": "50871144-380b-4ee2-97ee-6eb3050bcb3a",
+      "credentials": {
+        "discordBotApi": {
+          "id": "ln7XBsAuGcex2ZCt",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "guildId": {
+          "__rl": true,
+          "value": "1362874778209489097",
+          "mode": "list",
+          "cachedResultName": "테스트서버",
+          "cachedResultUrl": "https://discord.com/channels/1362874778209489097"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1362874872266756137",
+          "mode": "list",
+          "cachedResultName": "이미지생성",
+          "cachedResultUrl": "https://discord.com/channels/1362874778209489097/1362874872266756137"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discordTool",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        80
+      ],
+      "id": "4b4f5e0e-4646-41c8-8735-675458c668ff",
+      "name": "Get Message Discord",
+      "webhookId": "1131d28f-36aa-4c5d-94a4-953d8edc4ff7",
+      "credentials": {
+        "discordBotApi": {
+          "id": "ln7XBsAuGcex2ZCt",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "familyName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Family_Name', ``, 'string') }}",
+        "givenName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Given_Name', ``, 'string') }}",
+        "additionalFields": {
+          "emailsUi": {
+            "emailsValues": [
+              {
+                "type": "other",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "phoneUi": {
+            "phoneValues": [
+              {
+                "type": "mobile",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        140,
+        280
+      ],
+      "id": "6f9c5b21-83b7-4cca-82e1-200334090473",
+      "name": "Create Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "55aB7ITstjCTO0gp",
+          "name": "Google Contacts account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "fields": [
+          "*"
+        ],
+        "useQuery": true,
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        260,
+        280
+      ],
+      "id": "7795ee3f-8c69-4ff2-bb68-7d35eb57fb8b",
+      "name": "Get Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "55aB7ITstjCTO0gp",
+          "name": "Google Contacts account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "news_vector_tool",
+        "description": "뉴스 벡터 검색 툴"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        300
+      ],
+      "id": "d117d05c-5db8-4b44-971e-5512afebf846",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "news",
+          "mode": "list",
+          "cachedResultName": "news"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        440
+      ],
+      "id": "8781425c-19f0-49d3-bc37-72a06ff0e3a6",
+      "name": "Qdrant Vector Store1",
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        560
+      ],
+      "id": "0d96d18a-c788-443b-a9b4-ee4808bd7564",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        440
+      ],
+      "id": "b6ba1d77-fa30-4825-88d7-5666eb861e28",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/AI-Contents-1dfa51ef614380d6b04ecfef0625a1bd?showMoveTo=true&saveParent=true",
+          "mode": "url"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        280
+      ],
+      "id": "794a19d2-9d07-4487-a352-47660fa79733",
+      "name": "Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "vZcvgD601ETHZQAN",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "image_create_tool",
+        "description": "이미지 생구",
+        "workflowId": {
+          "__rl": true,
+          "value": "ZLKXKLVVVPnXVp88",
+          "mode": "list",
+          "cachedResultName": "024-1-image"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        280
+      ],
+      "id": "7e1fe1cb-ee5d-4ab9-bb07-b0f7179a6ecb",
+      "name": "Image Create"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Discord": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebSearch": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Member Discord": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Message Discord": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Create": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f74b6940-219b-44b9-8011-8d526f682dc8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "E0atjY1o6kSQTPIj",
+  "tags": []
+}

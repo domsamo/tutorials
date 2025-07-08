@@ -1,0 +1,334 @@
+{
+  "name": "010-youtube-transcript",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        80
+      ],
+      "id": "08762864-27ec-4ea8-a559-82da6fff2565",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f5642ab-c972-433b-9367-a033fd26135a",
+              "name": "url",
+              "value": "https://www.youtube.com/watch?v=E4l91XKQSgw",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        80
+      ],
+      "id": "abbf3cba-e36f-486d-ba7a-d1d9a0b7d8cd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "youtubeURL": "={{ $json.url }}",
+        "language": "ko"
+      },
+      "type": "n8n-nodes-youtube-transcript-api.youtubeTranscriptApi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -180
+      ],
+      "id": "25bc936a-e66c-4be8-a6d9-90376cb89890",
+      "name": "Youtube Transcript",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.transcript }}\n\n------\n\n위의 유튜브 스크립트 내용을 짧게 요약해줘.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        780,
+        -100
+      ],
+      "id": "9a1c7ba1-237c-4310-a41d-042777491ddb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        80
+      ],
+      "id": "8780f7b5-51fd-4e1f-9456-1202fcaa9024",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "youtubeURL": "={{ $json.url }}"
+      },
+      "type": "n8n-nodes-youtube-transcript-api.youtubeTranscriptApi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        20
+      ],
+      "id": "9d72ef60-e41f-4798-aba9-f60a8f3bc634",
+      "name": "Youtube Transcript1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        440,
+        -100
+      ],
+      "id": "96896eca-3bd8-4a43-8c2d-1918d8e224fa",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "transcript"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -100
+      ],
+      "id": "cb1981f3-83b7-45ca-83db-7036a855515d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "62711898-064d-48ca-b9bf-e1b330bdd3a3",
+      "name": "When chat message received",
+      "webhookId": "585b468a-c741-4954-bcd3-c01c623c04f0"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3fabbdcb-1c23-48e0-80e0-ca0eaac1e39d",
+              "name": "url",
+              "value": "={{  $json.chatInput.match(/https?:\\/\\/(www\\.)?(youtube\\.com|youtu\\.be)\\/[^\\s]+/)?.[0] || null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -100,
+        -100
+      ],
+      "id": "926d5951-0f74-4e6d-92c8-26259d7811b6",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de1a2d5b-42d8-48dc-8392-4d82b071e0df",
+              "leftValue": "={{ $json.url === null }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        20,
+        -100
+      ],
+      "id": "81dd5c83-cb7d-4235-870b-0a8c7ed75e03",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Youtube Transcript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube Transcript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Youtube Transcript1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Youtube Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be8a2b07-a556-42af-b89b-43fb89d9e0f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "uJdhFggqB5w63rCA",
+  "tags": []
+}

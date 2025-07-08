@@ -1,0 +1,161 @@
+{
+  "name": "016-image",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        0
+      ],
+      "id": "c59cee42-9bae-4396-acc9-9c38cbdd3959",
+      "name": "When chat message received",
+      "webhookId": "222f85af-dfcf-4e5f-bd98-04becd3cee45"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.chatInput }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        500,
+        200
+      ],
+      "id": "f31bfa6c-5f51-45ef-917f-7ac0723a7041",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer r8_6zIsLYuiVpKt5y47yJT7DfnJ9evbMYy2fIJs6"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "wait"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"input\": {\n      \"prompt\": \"{{ $json.output }}\",\n      \"go_fast\": true,\n      \"num_outputs\": 1,\n      \"aspect_ratio\": \"1:1\",\n      \"output_format\": \"png\",\n      \"output_quality\": 80\n    }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ],
+      "id": "44d6f466-0d40-4774-8569-5b8e08834321",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "당신은 전문 이미지 프롬프터 입니다. 주어진 내용에 해당하는 이미지를 생성하기 위한 AI 이미지 생성용 프롬프트를 작성해주세요.\n\n\n[중요지침]\n- 이미지는 항상 고퀄리티의 최고 해상도와 실사 같은 느낌의 이미지 입니다. \n- 최종 프롬프트는 쌍따옴표 없이 문자열만 반환합니다.\n- 프롬프트는 영문으로 작성되어야 함."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        160,
+        0
+      ],
+      "id": "06f3052f-7acd-44fd-9f4b-45b320e09666",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        160
+      ],
+      "id": "fd8ca60d-12f3-4810-8453-04abf3a13634",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Iy5TlhG2RJOqeaMY",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "625c7d60-43a6-4671-b4e4-385e81880a2d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "h6VaWp1qy6j3526H",
+  "tags": []
+}
