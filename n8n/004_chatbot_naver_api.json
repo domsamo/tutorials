@@ -14,7 +14,7 @@
       ],
       "id": "e9aecc9c-f264-4174-9c5d-c4bd120651aa",
       "name": "When chat message received",
-      "webhookId": "7a514c15-530c-49f5-8e17-847db018f6eb"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -51,7 +51,7 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "FdrbvMNQbYrT6W62",
+          "id": "",
           "name": "OpenAi account"
         }
       },
@@ -82,7 +82,7 @@
       "name": "SerpAPI",
       "credentials": {
         "serpApi": {
-          "id": "444oKmVYVVjEgMgv",
+          "id": "",
           "name": "SerpAPI account"
         }
       }
@@ -102,7 +102,7 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "7H4MhgDppHYVEhdU",
+          "id": "",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -125,11 +125,11 @@
           "parameters": [
             {
               "name": "X-Naver-Client-Id",
-              "value": "7RArhm2yG7HeE8QW4Ba_"
+              "value": ""
             },
             {
               "name": "X-Naver-Client-Secret",
-              "value": "9HfEM9KIGl"
+              "value": ""
             }
           ]
         },
@@ -153,11 +153,11 @@
           "parameters": [
             {
               "name": "cx",
-              "value": "06d12ede226144e51"
+              "value": ""
             },
             {
               "name": "key",
-              "value": "AIzaSyAbyKa2iOBJMUcPXPPjhYJ9GIHqSROtmPw"
+              "value": ""
             },
             {
               "name": "q",
