@@ -8,49 +8,51 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -220,
-        -60
+        -500,
+        -40
       ],
-      "id": "51787177-77b5-4158-a41e-0cc2aa988070",
+      "id": "77c94995-d145-42e1-a07f-a7c436a1fdf4",
       "name": "When chat message received",
-      "webhookId": "b6226cde-9083-44dc-ba1e-b5506fceb844"
+      "webhookId": "3f6f8c5e-b22c-41a9-afdc-317b6c5f52f9"
     },
     {
       "parameters": {
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.9,
+      "typeVersion": 2,
       "position": [
-        0,
-        -60
+        -260,
+        -40
       ],
-      "id": "90f7971f-1350-4ff8-813a-6ff5c5e8fe3e",
+      "id": "b83e0925-5c9b-4ac9-8cae-c44bc27ab890",
       "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4o-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -20,
-        120
+        -260,
+        160
       ],
-      "id": "ea91f0bc-88e8-4ad6-999a-450f2d5ca85a",
+      "id": "54e1e867-a966-4308-961b-435e1bbe3f42",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "2nPWVBHfjoz2HHhY",
-          "name": "OpenAi account 2"
+          "id": "FdrbvMNQbYrT6W62",
+          "name": "OpenAi account"
         }
-      }
+      },
+      "notes": "jglee - OpenAI API Key"
     }
   ],
   "pinData": {},
@@ -82,11 +84,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f3d05b8d-c54c-4cc0-a0f9-c830e6162d51",
+  "versionId": "86f168e4-39e4-4b19-b3f1-646660fe6b99",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "h4xeWVPYTkEbRxOk",
+  "id": "vwZAxMSpRvMSo1KD",
   "tags": []
 }

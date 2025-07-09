@@ -1,15 +1,15 @@
 {
-  "name": "010-youtube-transcript",
+  "name": "010_youtube_transcript",
   "nodes": [
     {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -200,
-        80
+        -440,
+        260
       ],
-      "id": "08762864-27ec-4ea8-a559-82da6fff2565",
+      "id": "46073f20-cd46-4b6a-afc0-06000e7c00ff",
       "name": "When clicking ‘Test workflow’"
     },
     {
@@ -29,10 +29,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -40,
-        80
+        -280,
+        260
       ],
-      "id": "abbf3cba-e36f-486d-ba7a-d1d9a0b7d8cd",
+      "id": "0f61f466-b9fa-42eb-8936-7e6992254bb5",
       "name": "Edit Fields"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-youtube-transcript-api.youtubeTranscriptApi",
       "typeVersion": 1,
       "position": [
-        240,
-        -180
+        0,
+        0
       ],
-      "id": "25bc936a-e66c-4be8-a6d9-90376cb89890",
+      "id": "02a7771c-9a84-4d26-8d6b-bf9240957dca",
       "name": "Youtube Transcript",
       "onError": "continueRegularOutput"
     },
@@ -59,10 +59,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
-        780,
-        -100
+        540,
+        80
       ],
-      "id": "9a1c7ba1-237c-4310-a41d-042777491ddb",
+      "id": "d852f42e-f619-48cb-b7c9-015b038555c0",
       "name": "AI Agent"
     },
     {
@@ -77,14 +77,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        780,
-        80
+        540,
+        260
       ],
-      "id": "8780f7b5-51fd-4e1f-9456-1202fcaa9024",
+      "id": "f9323803-f7a5-474d-92ff-ad32884ad1cd",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
@@ -96,10 +96,10 @@
       "type": "n8n-nodes-youtube-transcript-api.youtubeTranscriptApi",
       "typeVersion": 1,
       "position": [
-        240,
-        20
+        0,
+        200
       ],
-      "id": "9d72ef60-e41f-4798-aba9-f60a8f3bc634",
+      "id": "5fefb307-a221-4d4c-80b3-8c67297d7b2f",
       "name": "Youtube Transcript1",
       "onError": "continueRegularOutput"
     },
@@ -108,10 +108,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.1,
       "position": [
-        440,
-        -100
+        200,
+        80
       ],
-      "id": "96896eca-3bd8-4a43-8c2d-1918d8e224fa",
+      "id": "4a4bb3fb-9eff-47d7-9a57-60fad4a95422",
       "name": "Merge"
     },
     {
@@ -128,10 +128,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        600,
-        -100
+        360,
+        80
       ],
-      "id": "cb1981f3-83b7-45ca-83db-7036a855515d",
+      "id": "ab829f10-8cfa-49d8-93bf-e92d62fb5e78",
       "name": "Aggregate"
     },
     {
@@ -142,10 +142,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -240,
-        -100
+        -480,
+        80
       ],
-      "id": "62711898-064d-48ca-b9bf-e1b330bdd3a3",
+      "id": "8fbbe5f2-773e-4b79-96b4-1870c6db5987",
       "name": "When chat message received",
       "webhookId": "585b468a-c741-4954-bcd3-c01c623c04f0"
     },
@@ -166,10 +166,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -100,
-        -100
+        -340,
+        80
       ],
-      "id": "926d5951-0f74-4e6d-92c8-26259d7811b6",
+      "id": "e3f127e1-865f-4848-a006-05ae1bbad941",
       "name": "Edit Fields1"
     },
     {
@@ -200,10 +200,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        20,
-        -100
+        -220,
+        80
       ],
-      "id": "81dd5c83-cb7d-4235-870b-0a8c7ed75e03",
+      "id": "24b66def-315f-403b-8601-3565dc739b21",
       "name": "If"
     }
   ],
@@ -218,11 +218,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        []
       ]
     },
     "Youtube Transcript": {
@@ -324,11 +319,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "be8a2b07-a556-42af-b89b-43fb89d9e0f5",
+  "versionId": "79d3f4b7-86e9-4dea-b977-5978d2e1ee4e",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "uJdhFggqB5w63rCA",
+  "id": "H4m9p2rkRSvgwbKE",
   "tags": []
 }

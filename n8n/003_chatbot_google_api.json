@@ -8,60 +8,61 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -240,
-        -120
+        -500,
+        -40
       ],
-      "id": "aa58745a-1f04-47b6-9280-09b414f9da31",
+      "id": "91ed1c95-49aa-41ff-8d3f-69dbd31a9ce2",
       "name": "When chat message received",
-      "webhookId": "c61e935c-22e4-44ec-8d40-ffe099081074"
+      "webhookId": "9a530ee6-070c-4d32-beac-516aca245c40"
     },
     {
       "parameters": {
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
+      "typeVersion": 2,
       "position": [
-        -80,
-        -120
+        -260,
+        -40
       ],
-      "id": "ea71b4eb-0af8-4e79-a43d-656c470221c1",
+      "id": "5d819b26-d7b3-4169-8539-3ce3399eb19d",
       "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-4o",
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "gpt-4o"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        200,
-        240
+        -540,
+        220
       ],
-      "id": "40dfa250-c40b-4cd9-941f-dd589ba8c8ab",
+      "id": "ff724144-312e-4d6d-9bd7-829a3f129997",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
-      }
+      },
+      "notes": "jglee - OpenAI API Key"
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        0,
-        80
+        -120,
+        160
       ],
-      "id": "928e9592-3817-4690-b9d8-f67c333a41a5",
+      "id": "747c7267-bc52-46eb-82be-c83b8bbe2686",
       "name": "Simple Memory"
     },
     {
@@ -71,49 +72,17 @@
       "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
       "typeVersion": 1,
       "position": [
-        300,
-        240
+        320,
+        180
       ],
-      "id": "03851e36-bdfd-4770-93c1-52a8903fd2e2",
+      "id": "1ecfd25c-2bc5-444a-a66c-73101ea185d9",
       "name": "SerpAPI",
       "credentials": {
         "serpApi": {
-          "id": "5uKfNuxnW7ffm7zR",
+          "id": "444oKmVYVVjEgMgv",
           "name": "SerpAPI account"
         }
       }
-    },
-    {
-      "parameters": {
-        "toolDescription": "검색 툴",
-        "url": "https://www.googleapis.com/customsearch/v1",
-        "sendQuery": true,
-        "parametersQuery": {
-          "values": [
-            {
-              "name": "cx",
-              "valueProvider": "fieldValue",
-              "value": "a390d5e82797d4be6"
-            },
-            {
-              "name": "key",
-              "valueProvider": "fieldValue",
-              "value": "AIzaSyBQYnBuyEF4u3nuHbDTpfmWzkBYQ5bQBNY"
-            },
-            {
-              "name": "q"
-            }
-          ]
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
-      "typeVersion": 1.1,
-      "position": [
-        120,
-        80
-      ],
-      "id": "d1a1861e-ff6f-47fa-8fac-acd414082280",
-      "name": "HTTP Request"
     },
     {
       "parameters": {
@@ -123,17 +92,49 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -120,
-        80
+        -260,
+        160
       ],
-      "id": "244d411a-e63a-4772-a28a-d33cd08a62ef",
+      "id": "9172fab7-4e1d-4711-9694-8d6e91b7378f",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "9FrkRfbtspOImIho",
+          "id": "7H4MhgDppHYVEhdU",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Web Search",
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cx",
+              "value": "06d12ede226144e51"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyAbyKa2iOBJMUcPXPPjhYJ9GIHqSROtmPw"
+            },
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        160
+      ],
+      "id": "49a65687-0993-4dba-bb81-7b15fdaa339e",
+      "name": "HTTP Request"
     }
   ],
   "pinData": {},
@@ -154,11 +155,6 @@
         []
       ]
     },
-    "AI Agent": {
-      "main": [
-        []
-      ]
-    },
     "Simple Memory": {
       "ai_memory": [
         [
@@ -175,17 +171,6 @@
         []
       ]
     },
-    "HTTP Request": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
@@ -196,17 +181,28 @@
           }
         ]
       ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6faf0979-9d5f-417c-93c3-d84c9ca1a6e2",
+  "versionId": "6f0101ea-3e3f-4f63-b124-4fce2485b141",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "L8DAagCAya3O5VzM",
+  "id": "PtzhxztNZGYhLhc1",
   "tags": []
 }

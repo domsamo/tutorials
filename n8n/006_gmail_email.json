@@ -4,54 +4,55 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=메일 제목:\n{{ $json.subject }}\n\n메일 내용:\n{{ $json.text }}\n\n-------------\n\n위의 메일의 내용을 참고하여 스팸여부를 판단 하세요.\n스팸 여부 판별 이유는 한글로 작성",
+        "text": "=메일 제목:\n{{ $json.subject }}\n\n메일 내용:\n{{ $json.text }}\n\n--------------------\n\n위의 메일의 내용을 참고하여 스펨여부를 판단하세요\n스팸 여부 판별 이유는 한글로 작성",
         "hasOutputParser": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
+      "typeVersion": 2,
       "position": [
-        240,
-        -80
+        -220,
+        20
       ],
-      "id": "24b94efd-8853-4801-80f4-2d57d7fff07d",
+      "id": "1c8ec430-f75b-4b6e-874e-065495b46cd9",
       "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4o-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        240,
-        100
+        -220,
+        200
       ],
-      "id": "d327f709-272b-4c85-bcdb-c37189380bbd",
+      "id": "fe34a80f-a7a9-49bb-8a01-fd1fd483af20",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n\t\"is_spam\": \"스팸여부\",\n    \"reason\": \"스팸 판별 이유\"\n}"
+        "jsonSchemaExample": "{\n\t\"is_spam\": \"스팸여부\",\n    \"reason\": \"스팸 판별 이유\"\n\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
+      "typeVersion": 1.3,
       "position": [
-        420,
-        100
+        -20,
+        200
       ],
-      "id": "fc08b404-d6a3-474e-94f2-4891e38214dc",
+      "id": "6c8dc011-25ed-4d6b-bd89-b1ef52ec5889",
       "name": "Structured Output Parser"
     },
     {
@@ -74,7 +75,7 @@
                       "type": "string",
                       "operation": "equals"
                     },
-                    "id": "d9384317-7088-4dac-9bba-4d4844a6c6f5"
+                    "id": "d3dfa07c-6d67-405e-a14b-3847885e5a29"
                   }
                 ],
                 "combinator": "and"
@@ -90,7 +91,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "015ea9d8-f89a-49d0-9051-23654ffc871d",
+                    "id": "e8c46e26-1287-4431-a636-42500926e3d1",
                     "leftValue": "={{ $json.output.is_spam }}",
                     "rightValue": "no",
                     "operator": {
@@ -110,10 +111,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        540,
-        -80
+        220,
+        20
       ],
-      "id": "5d0cda1f-5c1b-4188-a528-a165dfe7d1ed",
+      "id": "6258d1b5-084d-4909-99d6-29567fb5b3e3",
       "name": "Switch"
     },
     {
@@ -128,24 +129,171 @@
         "emailDateRange": {},
         "emailFlags": {},
         "emailSearchFilters": {
-          "from": "={{ $('MAIL DATA').first().json.from }}",
-          "subject": "={{ $('MAIL DATA').first().json.subject }}"
+          "from": "={{ $('MAIL DATA').item.json.from }}",
+          "subject": "={{ $('MAIL DATA').item.json.subject }}"
         }
       },
       "type": "n8n-nodes-imap.imap",
       "typeVersion": 1,
       "position": [
-        740,
-        -160
+        420,
+        -100
       ],
-      "id": "c9fcc89b-fd10-48e6-8d6d-e329ee4cd000",
+      "id": "7a68396e-38c2-40a4-a741-f5a00e89e75e",
       "name": "GetMail",
       "credentials": {
         "imap": {
-          "id": "94JWf8panO4rmZtJ",
+          "id": "dH4hX0lCfSYmYKR9",
           "name": "NaverMail"
         }
       }
+    },
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        160
+      ],
+      "id": "b9c2cefd-f1a9-4e66-bacb-7fa6361e92e4",
+      "name": "Gmail-domsamo(IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "KwCj23NvOVJEn6Iw",
+          "name": "Gmail-domsamo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        -20
+      ],
+      "id": "4e743a29-6aad-43a7-88ad-fd5bc8d2a514",
+      "name": "Naver-domsamo(IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "dH4hX0lCfSYmYKR9",
+          "name": "NaverMail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb79cee9-b2dc-4750-b0dd-5caac7dd7639",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "dcded7cb-fa61-4cb7-a705-fa0843e7b751",
+              "name": "from",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "b8b41c7c-a061-4e37-9812-8d97560dedba",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -20
+      ],
+      "id": "d462a941-306f-4bc5-9b6b-e1b18e3e83b2",
+      "name": "Naver Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb79cee9-b2dc-4750-b0dd-5caac7dd7639",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "cd897edd-cf54-46fa-a598-a24d5b117488",
+              "name": "from",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "067140f3-3b80-4652-a869-8e1a39993e9c",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        160
+      ],
+      "id": "ba583592-4eab-488e-93d5-31845c629cff",
+      "name": "Gmail Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af0902d-1ed4-45e3-8f7c-7f02de6fd0c8",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "770fd473-61d5-4c22-b951-311ed1cf861c",
+              "name": "from",
+              "value": "={{ $json.from }}",
+              "type": "string"
+            },
+            {
+              "id": "ad0bcb68-5c39-4f53-8309-074b6fe7076c",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -420,
+        20
+      ],
+      "id": "8a23dccf-bb9f-4924-a286-af452ec09cce",
+      "name": "MAIL DATA"
     },
     {
       "parameters": {
@@ -157,175 +305,27 @@
           "mode": "list",
           "value": "INBOX"
         },
-        "emailUid": "={{ $json.uid }}",
         "destinationMailbox": {
           "__rl": true,
-          "value": "Deleted Messages",
+          "value": "Junk",
           "mode": "list",
-          "cachedResultName": "Deleted Messages"
+          "cachedResultName": "Junk"
         }
       },
       "type": "n8n-nodes-imap.imap",
       "typeVersion": 1,
       "position": [
-        960,
-        -160
+        620,
+        -100
       ],
-      "id": "1e7f354a-3df6-41a9-bc0b-4a3f282174ba",
+      "id": "c8ed8cf3-7c7d-4033-90db-3ddf17621e3e",
       "name": "DeleteMail",
       "credentials": {
         "imap": {
-          "id": "94JWf8panO4rmZtJ",
+          "id": "dH4hX0lCfSYmYKR9",
           "name": "NaverMail"
         }
       }
-    },
-    {
-      "parameters": {
-        "postProcessAction": "nothing",
-        "format": "resolved",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.emailReadImap",
-      "typeVersion": 2,
-      "position": [
-        -240,
-        -160
-      ],
-      "id": "4d9507d7-2053-4e59-ad37-74a31aaae590",
-      "name": "NaverEmail",
-      "credentials": {
-        "imap": {
-          "id": "94JWf8panO4rmZtJ",
-          "name": "NaverMail"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "postProcessAction": "nothing",
-        "format": "resolved",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.emailReadImap",
-      "typeVersion": 2,
-      "position": [
-        -240,
-        20
-      ],
-      "id": "b5243fc1-e9a2-421c-a454-ca9b77072225",
-      "name": "GmailEmail",
-      "credentials": {
-        "imap": {
-          "id": "0W6qSn0eYoxM9pMM",
-          "name": "Gmail"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "7db994db-22ca-457b-924f-d926baa59226",
-              "name": "subject",
-              "value": "={{ $json.subject }}",
-              "type": "string"
-            },
-            {
-              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
-              "name": "from",
-              "value": "={{ $json.from.value[0].address }}",
-              "type": "string"
-            },
-            {
-              "id": "bc258476-f039-4435-93ad-4479402143e2",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -100,
-        -160
-      ],
-      "id": "86456b9d-80c0-400e-ad80-5cb74987b049",
-      "name": "Naver Fields"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "7db994db-22ca-457b-924f-d926baa59226",
-              "name": "subject",
-              "value": "={{ $json.subject }}",
-              "type": "string"
-            },
-            {
-              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
-              "name": "from",
-              "value": "={{ $json.from.value[0].address }}",
-              "type": "string"
-            },
-            {
-              "id": "4bc4a8f9-f51b-49b6-9953-a228ad4cdbc8",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -100,
-        20
-      ],
-      "id": "855a55dd-2c3f-40bc-84b1-5837cf7ad752",
-      "name": "Google Fields"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "b944a08b-378f-4d9f-8726-b4b893432c35",
-              "name": "subject",
-              "value": "={{ $json.subject }}",
-              "type": "string"
-            },
-            {
-              "id": "b8b36de3-0c86-42ff-93db-855d93e0ba09",
-              "name": "from",
-              "value": "={{ $json.from }}",
-              "type": "string"
-            },
-            {
-              "id": "902f71aa-78a9-4c41-bf0c-16a7c68d97d9",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        80,
-        -80
-      ],
-      "id": "b2290e9c-b1d0-48b4-b3da-46a99a39460d",
-      "name": "MAIL DATA"
     }
   ],
   "pinData": {},
@@ -379,22 +379,22 @@
         []
       ]
     },
-    "NaverEmail": {
+    "Gmail-domsamo(IMAP)": {
       "main": [
         [
           {
-            "node": "Naver Fields",
+            "node": "Gmail Fields",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "GmailEmail": {
+    "Naver-domsamo(IMAP)": {
       "main": [
         [
           {
-            "node": "Google Fields",
+            "node": "Naver Fields",
             "type": "main",
             "index": 0
           }
@@ -412,7 +412,7 @@
         ]
       ]
     },
-    "Google Fields": {
+    "Gmail Fields": {
       "main": [
         [
           {
@@ -439,11 +439,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e1dfe1d2-9501-4d17-bdc9-99d26cdd4daf",
+  "versionId": "fa83491d-08e7-4c20-96f9-9a9331c93791",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "g0d84hiq5pJHGjBs",
+  "id": "0R9Uf6aLUwkrsgY2",
   "tags": []
 }

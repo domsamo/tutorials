@@ -8,60 +8,61 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -240,
-        -120
+        -500,
+        -40
       ],
-      "id": "587b1f99-5cba-406a-b9b1-ca2d9e4e90fd",
+      "id": "2dc89d0b-01a8-4116-889b-9d1f1fa11bf1",
       "name": "When chat message received",
-      "webhookId": "a8a09c82-59e2-41e3-bc37-b31ce62f1f4a"
+      "webhookId": "d776736c-5f8c-4382-bb89-907a52657102"
     },
     {
       "parameters": {
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
+      "typeVersion": 2,
       "position": [
-        -80,
-        -120
+        -260,
+        -40
       ],
-      "id": "41c45350-b767-463a-a6f9-b95ae1711273",
+      "id": "66e39bb1-f7ea-486b-8e16-5bc1d691e309",
       "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-4o",
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "gpt-4o"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -100,
-        60
+        -260,
+        160
       ],
-      "id": "6e799b78-3948-4f45-a281-ede185bb4c67",
+      "id": "076256c6-5a18-418c-ba76-568d43e06282",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
-      }
+      },
+      "notes": "jglee - OpenAI API Key"
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        20,
-        60
+        -140,
+        160
       ],
-      "id": "444c767c-5723-4a91-a3d2-e3989310ef43",
+      "id": "ebde85e8-5eed-46a1-af08-3d8d4fc25a5a",
       "name": "Simple Memory"
     },
     {
@@ -71,14 +72,14 @@
       "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
       "typeVersion": 1,
       "position": [
-        140,
-        60
+        -40,
+        160
       ],
-      "id": "53f94845-9ed5-4a21-ba9c-0890a3d1ceed",
+      "id": "b0d72c86-dedc-407f-b0d0-4cb7dfcf931e",
       "name": "SerpAPI",
       "credentials": {
         "serpApi": {
-          "id": "5uKfNuxnW7ffm7zR",
+          "id": "444oKmVYVVjEgMgv",
           "name": "SerpAPI account"
         }
       }
@@ -108,11 +109,6 @@
         ]
       ]
     },
-    "AI Agent": {
-      "main": [
-        []
-      ]
-    },
     "Simple Memory": {
       "ai_memory": [
         [
@@ -140,11 +136,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0d97a689-9491-4488-a71e-675ffae9e008",
+  "versionId": "0ff64c56-9830-4579-8e86-22a8f8945ca7",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "02Gfz3NcJhyCeRpu",
+  "id": "HhU1opQoOH3EYfpD",
   "tags": []
 }

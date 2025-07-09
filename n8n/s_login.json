@@ -3,18 +3,17 @@
   "nodes": [
     {
       "parameters": {
-        "public": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -280,
-        -60
+        -840,
+        0
       ],
-      "id": "099e1965-0f85-4666-99a8-24823d75027b",
+      "id": "738bd0d4-856c-468f-b023-ad5eea138962",
       "name": "When chat message received",
-      "webhookId": "58c16950-ed40-4937-9bae-c67531f63c71"
+      "webhookId": "0b9294aa-5af8-4c0d-9201-430b918de2b1"
     },
     {
       "parameters": {
@@ -26,10 +25,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -60,
-        -60
+        -620,
+        0
       ],
-      "id": "c1e62e5c-0abc-45c7-a773-224cefc850e5",
+      "id": "9b7392d3-7b1f-4fc3-adf1-67c6dfcec496",
       "name": "AI Agent"
     },
     {
@@ -45,29 +44,29 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -60,
-        120
+        -620,
+        180
       ],
-      "id": "ced73f94-b6fd-44e9-bf79-23be7a2f2c9a",
+      "id": "d5fe54dd-1b61-4db6-8bb6-b73dd393b5fc",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"type\": \"동작 유형\",\n  \"input\": \"사용자 입력내용\",\n  \"id\": \"아이디\",\n  \"pass\": \"비번\",\n  \"session_id\": \"세션 아이디\"\n}"
+        "jsonSchemaExample": "{\n  \"type\": \"동작 유형\",\n  \"input\": \"사용자 입력내용\",\n  \"id\": \"아이디\",\n  \"pass\": \"비번\",\n  \"session_id\": \"세션 아이\"\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        120,
-        120
+        -440,
+        180
       ],
-      "id": "0901a1dd-f47f-47d5-8af7-e18ae1f25131",
+      "id": "480d50cd-0154-4bd5-81da-363f59cec14d",
       "name": "Structured Output Parser"
     },
     {
@@ -75,31 +74,31 @@
         "assignments": {
           "assignments": [
             {
-              "id": "abd779af-f336-4a76-b6d7-ce8616ecc09e",
+              "id": "44300969-5c5c-425e-9fd2-d6d54d58c3fd",
               "name": "type",
               "value": "={{ $json.output.type }}",
               "type": "string"
             },
             {
-              "id": "e8d50ebf-e973-45cd-84c4-4eb30fb1a9e5",
+              "id": "318cf8bf-85b3-4e6a-b441-c8c343b056c7",
               "name": "input",
               "value": "={{ $json.output.input }}",
               "type": "string"
             },
             {
-              "id": "f48e4542-5b31-4c69-841d-4011e8e17d80",
+              "id": "9927375b-85bd-4537-9a27-7e8cfc5a0d5d",
               "name": "id",
               "value": "={{ $json.output.id }}",
               "type": "string"
             },
             {
-              "id": "50e035e2-48f6-4b83-84d2-6e630699e475",
+              "id": "e3a08b3e-5e64-4bde-9fc8-8a3ba5442129",
               "name": "pass",
               "value": "={{ $json.output.pass }}",
               "type": "string"
             },
             {
-              "id": "b25159fb-08a5-4e7a-a89d-09d37ed8fbc2",
+              "id": "aae9b073-ff54-4c52-8c93-41ae2c1c78cf",
               "name": "session_id",
               "value": "={{ $json.output.session_id }}",
               "type": "string"
@@ -111,10 +110,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        260,
-        -60
+        -260,
+        0
       ],
-      "id": "f2f49832-dc83-4fa5-93e1-1d2522e2aecb",
+      "id": "30be916d-8087-46f0-8085-e7d3807e94b9",
       "name": "SET VAR"
     },
     {
@@ -137,7 +136,7 @@
                       "type": "string",
                       "operation": "equals"
                     },
-                    "id": "8a676146-bdb8-42b3-b7d6-5b4459af37f7"
+                    "id": "093fcb01-46e0-4b5b-bd53-1180e666f328"
                   }
                 ],
                 "combinator": "and"
@@ -155,7 +154,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "8212e4b5-c8f8-476d-ac07-d1b2dafbf9a9",
+                    "id": "bb677d2d-0bbf-49b9-a5f1-1195be7aaf13",
                     "leftValue": "={{ $json.type }}",
                     "rightValue": "join",
                     "operator": {
@@ -180,7 +179,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "c34ed566-346a-4c78-a8f1-14d4f6dfe501",
+                    "id": "ccc13ae1-980f-4623-9fe9-6bf814493003",
                     "leftValue": "={{ $json.type }}",
                     "rightValue": "login",
                     "operator": {
@@ -205,7 +204,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "67a4e660-2a27-4ece-b5de-f349e07f8c24",
+                    "id": "8ed413b0-14bb-4a6f-8145-ca46f259e2ba",
                     "leftValue": "={{ $json.type }}",
                     "rightValue": "function",
                     "operator": {
@@ -227,10 +226,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        400,
-        -80
+        -40,
+        -20
       ],
-      "id": "3bc272a1-e838-4bce-9ab1-d89982a81065",
+      "id": "62b5f1e2-5ca6-4158-9a3e-707cd9d3387b",
       "name": "Switch"
     },
     {
@@ -241,10 +240,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        660,
-        -240
+        180,
+        -194
       ],
-      "id": "46c1efbf-b1ed-4011-8572-fee63fabcb23",
+      "id": "3827338a-7a44-412c-b351-37a132fb64f1",
       "name": "HELP"
     },
     {
@@ -258,7 +257,7 @@
           },
           "conditions": [
             {
-              "id": "d66d41a8-38ad-4aff-9591-b659dd3cb296",
+              "id": "2fdcf795-9d2c-4f28-916d-e0655afbf890",
               "leftValue": "={{ $json.id }}",
               "rightValue": "",
               "operator": {
@@ -268,7 +267,7 @@
               }
             },
             {
-              "id": "f125d26f-82ec-4b48-8e6c-725214da87c8",
+              "id": "c5f21508-2055-4f5e-94ed-7372efd97b5a",
               "leftValue": "={{ $json.pass }}",
               "rightValue": "",
               "operator": {
@@ -285,24 +284,24 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        660,
-        -100
+        380,
+        -120
       ],
-      "id": "920c81ec-5636-4aee-a9dd-013a4c33efb7",
+      "id": "127b361c-2b64-40c3-ba23-4663f2971882",
       "name": "ID/PASS Check1"
     },
     {
       "parameters": {
         "language": "python",
-        "pythonCode": "msg = \"\"\"\n아이디 / 비번을 확인하세요\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
+        "pythonCode": "msg = \"\"\"\n아이디/비번을 확인하세요.\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        900,
-        -40
+        600,
+        -20
       ],
-      "id": "eb4f8865-698d-407c-86d3-9a194926beae",
+      "id": "f60eb68e-f0b1-4f28-b61e-fc7daf8a8bd3",
       "name": "ERROR"
     },
     {
@@ -314,14 +313,14 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        900,
-        -180
+        600,
+        -194
       ],
-      "id": "faeb7f74-bd04-4e0a-b931-11bb0bbf1239",
+      "id": "ae09f52e-5579-411d-b929-52eb59d44413",
       "name": "Redis",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -335,14 +334,14 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1280,
-        -240
+        1040,
+        -200
       ],
-      "id": "0d60dc1a-210d-49db-a4d2-c52d97edad35",
+      "id": "49ec3e94-e70b-4eb4-8a83-ea2a3d389e8e",
       "name": "JOIN",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -358,7 +357,7 @@
           },
           "conditions": [
             {
-              "id": "b6a23366-7f1f-436a-a477-e5d8dd277267",
+              "id": "f5115e4c-baf6-47aa-af31-57fb7659efaf",
               "leftValue": "={{ $json.propertyName }}",
               "rightValue": "",
               "operator": {
@@ -375,10 +374,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1060,
-        -180
+        780,
+        -200
       ],
-      "id": "58070496-7fc4-4f6b-8bd1-36a0f8ec19b5",
+      "id": "63faadb0-9a20-4a73-8534-227d6f9599ad",
       "name": "IsMember"
     },
     {
@@ -389,24 +388,24 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1440,
-        -240
+        1240,
+        -200
       ],
-      "id": "0486d51c-c563-473e-a4a2-ee26d9c9c4c4",
+      "id": "7cd2283e-ae3a-4114-9bf7-4a40d9654a85",
       "name": "JOIN OK"
     },
     {
       "parameters": {
         "language": "python",
-        "pythonCode": "msg = \"\"\"\n중복된 아이디 입니다.\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
+        "pythonCode": "msg = \"\"\"\n중복된 아이디입니다.\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1280,
-        -80
+        1040,
+        -20
       ],
-      "id": "9a24c3a3-e36e-46b1-80cb-9c3eddd8a0a1",
+      "id": "8c0823aa-4ed0-45a1-a281-11cfa85a3324",
       "name": "ERROR_OUTPUT"
     },
     {
@@ -420,7 +419,7 @@
           },
           "conditions": [
             {
-              "id": "d66d41a8-38ad-4aff-9591-b659dd3cb296",
+              "id": "2fdcf795-9d2c-4f28-916d-e0655afbf890",
               "leftValue": "={{ $json.id }}",
               "rightValue": "",
               "operator": {
@@ -430,7 +429,7 @@
               }
             },
             {
-              "id": "f125d26f-82ec-4b48-8e6c-725214da87c8",
+              "id": "c5f21508-2055-4f5e-94ed-7372efd97b5a",
               "leftValue": "={{ $json.pass }}",
               "rightValue": "",
               "operator": {
@@ -447,10 +446,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        660,
-        60
+        380,
+        160
       ],
-      "id": "7b21cc50-2e58-4d52-b0dd-d4d36eae7753",
+      "id": "2cf7f67b-7981-455b-9e9a-2603da0e50e7",
       "name": "ID/PASS Check"
     },
     {
@@ -462,14 +461,14 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        900,
-        140
+        600,
+        260
       ],
-      "id": "1cdf16af-0421-46f7-81cc-0a0ccb45ebf6",
+      "id": "548d528e-ec34-46fd-bb3f-6c4aa0772813",
       "name": "Get ID",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -485,7 +484,7 @@
           },
           "conditions": [
             {
-              "id": "efc99e93-d6c6-4cfc-b34d-e27b9bf0684b",
+              "id": "6bf112ce-d65a-411b-bcdf-a44ec5441953",
               "leftValue": "={{ $json.propertyName }}",
               "rightValue": "={{ $('SET VAR').item.json.pass }}",
               "operator": {
@@ -502,31 +501,31 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1060,
-        140
+        820,
+        260
       ],
-      "id": "8f2c692d-5aad-4dee-8fdb-b90432c2133a",
-      "name": "Check Pass"
+      "id": "3fed03b7-83f0-4cc4-8737-53aff58bdf9c",
+      "name": "Check PASS"
     },
     {
       "parameters": {
         "operation": "set",
         "key": "={{ $('SET VAR').item.json.session_id }}",
-        "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss')}}",
+        "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
         "expire": true,
-        "ttl": 3600
+        "ttl": 600
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1280,
-        80
+        1040,
+        160
       ],
-      "id": "703ac792-c581-45bb-9632-dc83cefa340b",
+      "id": "42a46049-7fac-4603-b1e3-954fd4ab3f71",
       "name": "SAVE SessionID",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -539,31 +538,29 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1440,
-        80
+        1240,
+        160
       ],
-      "id": "0ea39587-b58b-4d00-b285-228b2b0f0fc2",
+      "id": "4e83c69f-5584-46bf-b56b-33d5a5fbad36",
       "name": "LOGIN OK"
     },
     {
       "parameters": {
         "operation": "set",
         "key": "={{ $('SET VAR').item.json.session_id }}",
-        "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
-        "expire": true,
-        "ttl": 3600
+        "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1120,
-        380
+        820,
+        500
       ],
-      "id": "1c70d181-02c3-4792-bf02-1c6fa3c44775",
+      "id": "3c039133-64a7-42f4-8b3a-440d1c380399",
       "name": "SET TTL",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -571,20 +568,20 @@
     {
       "parameters": {
         "operation": "get",
-        "key": "={{ $json.session_id }}",
+        "key": "={{ $('SET VAR').item.json.session_id }}",
         "options": {}
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        660,
-        420
+        380,
+        500
       ],
-      "id": "e973b665-837f-4b2b-8928-59663910eea7",
-      "name": "Get SeesionID",
+      "id": "ecfa7af3-c771-45b0-a310-ce516023349a",
+      "name": "Get SessionID",
       "credentials": {
         "redis": {
-          "id": "JZlK4sbXsHjCmFPI",
+          "id": "sVSowBAGLxZK6AT1",
           "name": "Redis account"
         }
       }
@@ -600,7 +597,7 @@
           },
           "conditions": [
             {
-              "id": "5556b499-4aa5-4c59-98ce-85a9b537ce3d",
+              "id": "4974ea37-3589-46bc-ab3d-9ed52a2012f6",
               "leftValue": "={{ $json.propertyName }}",
               "rightValue": "",
               "operator": {
@@ -617,24 +614,24 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        840,
-        420
+        560,
+        500
       ],
-      "id": "d15e81b1-a387-4994-a4a3-f2ad55d13163",
+      "id": "35db957c-a36d-4502-9a92-b14db37995fc",
       "name": "If"
     },
     {
       "parameters": {
         "language": "python",
-        "pythonCode": "msg = \"\"\"\n로그인 후 사용 가능합니다.\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
+        "pythonCode": "msg = \"\"\"\n로그인 후 사용가능합니다.\n\"\"\"\n\nreturn [{\n  \"output\": msg\n}]"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        560
+        820,
+        680
       ],
-      "id": "4448150e-b548-4e0e-9397-7fac518dcb43",
+      "id": "1965cb24-3768-4e4d-a1ad-42c7755ca24d",
       "name": "LOGIN FAILED"
     },
     {
@@ -646,10 +643,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        1340,
-        380
+        1040,
+        500
       ],
-      "id": "021f49e9-4026-4257-b504-7acc555178e1",
+      "id": "ca46d692-a1c2-4942-806c-617602721256",
       "name": "AI Agent1"
     },
     {
@@ -664,14 +661,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1340,
-        540
+        1060,
+        700
       ],
-      "id": "6e6ee5f8-25e1-4af9-b818-db37eac096b1",
+      "id": "e9f497f7-1797-4b0d-b068-6bc65ddae02d",
       "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
@@ -759,7 +756,7 @@
         ],
         [
           {
-            "node": "Get SeesionID",
+            "node": "Get SessionID",
             "type": "main",
             "index": 0
           }
@@ -846,14 +843,14 @@
       "main": [
         [
           {
-            "node": "Check Pass",
+            "node": "Check PASS",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Check Pass": {
+    "Check PASS": {
       "main": [
         [
           {
@@ -882,7 +879,7 @@
         ]
       ]
     },
-    "Get SeesionID": {
+    "Get SessionID": {
       "main": [
         [
           {
@@ -934,15 +931,15 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4c76027d-2b70-4fb2-b7c8-7e4e707e7bac",
+  "versionId": "870148b7-5b46-4876-af7a-940fe5b4aaf2",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "hLrCaILGUP2GFX3X",
+  "id": "NKwg3WdOT4RTITpQ",
   "tags": []
 }

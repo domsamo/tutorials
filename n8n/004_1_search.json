@@ -1,0 +1,293 @@
+{
+  "name": "004-1-search",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        40
+      ],
+      "id": "0a5741b1-2b33-45b2-985e-088995fedf94",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "https://openapi.naver.com/v1/search/blog",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Naver-Client-Id",
+              "value": "7RArhm2yG7HeE8QW4Ba_"
+            },
+            {
+              "name": "X-Naver-Client-Secret",
+              "value": "9HfEM9KIGl"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -20
+      ],
+      "id": "711666bf-c755-41d8-998e-ddcdf8474322",
+      "name": "NaverBlog"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cx",
+              "value": "06d12ede226144e51"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyAbyKa2iOBJMUcPXPPjhYJ9GIHqSROtmPw"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.query }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        160
+      ],
+      "id": "ee25ac07-4685-47c6-99d7-55d5a7c03a67",
+      "name": "GoogleSearch1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        320,
+        60
+      ],
+      "id": "ee91188c-2804-4417-8b58-cf446a082dda",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "items"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        500,
+        60
+      ],
+      "id": "801706c3-8c97-41f9-bff8-1c7fd9222f39",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5572ebd-4a44-465f-90cd-d4355d5d83e6",
+              "name": "query",
+              "value": "최신 영화",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        280
+      ],
+      "id": "7d7fa13b-873a-485b-a594-37208cd4053e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        280
+      ],
+      "id": "25284081-5f1c-4fcd-9e9a-f7a0c0c97821",
+      "name": "Test Workflow"
+    },
+    {
+      "parameters": {
+        "url": "https://openapi.naver.com/v1/search/webkr",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Naver-Client-Id",
+              "value": "7RArhm2yG7HeE8QW4Ba_"
+            },
+            {
+              "name": "X-Naver-Client-Secret",
+              "value": "9HfEM9KIGl"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -180
+      ],
+      "id": "384f1f70-4da0-4df6-9b39-9f7771e80ccb",
+      "name": "NaverWeb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "NaverBlog": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "NaverBlog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GoogleSearch1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "NaverWeb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GoogleSearch1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "NaverBlog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GoogleSearch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NaverWeb": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cd44f9e6-32c5-438f-ba27-60b0aa1ab15a",
+  "meta": {
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
+  },
+  "id": "LJwQBtW7OteNHcmZ",
+  "tags": []
+}

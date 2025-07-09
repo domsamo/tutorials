@@ -4,55 +4,43 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=당신은 메일 회신 전문 에이전트 입니다.\n다음의 메일의 제목과 내용을 보고 메일의 회신 여부를 판단하고 내용을 작성하세요.\n\n-----------\n\n메일 제목:\n{{ $('MAIL DATA').item.json.subject }}\n\n메일 내용:\n{{ $('MAIL DATA').item.json.text }}\n\n보낸 사람 이메일 주소:\n{{ $('MAIL DATA').item.json.from }}\n\n보낸 사람:\n{{ $('MAIL DATA').item.json.name }}\n\n오늘 날짜:\n{{ $json.currentDate }}\n\n-----------\n- 메일 수신시 Contacts 툴을 사용하여 연락처 검색을 먼저 해야 합니다.\n- Contacts 툴 검색은 이메일 주소만 검색합니다.\n- 연락처에 등록된 사람이 아닌 경우 메일을 회신하지 않습니다.\n- 회신할 내용이 없으면 text 의 값은 공백으로 설정하고 is_reply는 false로 설정합니다.\n- 반드시 오늘 날짜를 먼저 확인하세요.\n- 일정이나 미팅 약속을 요청하는 경우 반드시 Cal-Read 툴을 사용하여 일정 확인 후 해당 날짜에 일정이 없는 경우에만 약속을 잡아야함.\n- 반드시 상대방이 요구하는 날짜를 정확하게 확인 할 것.\n- 일정에 대한 내용이 메일에 있다면 Cal-Write 툴을 사용하여 일정을 등록해야함.\n- 일정 등록시 미팅 대상에 대한 정보(이메일, 이름 등)를 최대한 자세히 함께 기재할것.\n- 일정을 잡았을 경우 답장에 해당 일정에 대한 정보를 함께 발송할 것(예: 5월 10일 오후 3시에 뵙겠습니다.)\n- 회신을 보낼때 받은 메일의 제목을 쓰게되면 앞에 [Re]를 붙여서 회신임을 알릴것.\n\n------\n\n날짜 계산 지침\n- 다음주 목요일 등 자연어 날짜가 들어있는 경우, 반드시 오늘 날짜 기준으로 정확한 날짜 (예: 2025-10-11) 변환 후 처리 해야 합니다.\n- 예를 들어 오늘이 금요일이라면 다음주 목요일은 반드시 다음 주의 목요일인 6일 후를 의미합니다. 이렇게 날짜를 직접 계산 하세요.\n- 날짜 계산은 Asia/Seoul 시간을 기준으로 합니다.\n- 일정에 약속 시간 언급이 없는 경우라면 오전 9시 이후, 12시~1시 제외, 오후 6시 이전 중 아무 시간대나 알아서 약속을 잡습니다.",
+        "text": "=당신은 메일 회신 전문 에이전트 입니다.\n다음의 메일의 제목과 내용을 보고 메일의 회신 여부를 판단하고 내용을 작성하세요.\n\n--------------------\n\n메일 제목:\n{{ $('MAIL DATA').item.json.subject }}\n\n메일 내용:\n{{ $('MAIL DATA').item.json.text }}\n\n보낸 사람 이메일 주소:\n{{ $('MAIL DATA').item.json.from }}\n\n보낸 사람:\n{{ $('MAIL DATA').item.json.name }}\n\n오늘 날짜:\n{{ $json.currentDate }}\n\n받은 사람 이메일 주소:\n{{ $('MAIL DATA').item.json.to }}\n\n--------------------\n- 메일 수신시 Contacts 툴을 사용하여 연락처 검색을 먼저 해야 합니다.\n- Contacts 툴 검색은 이메일 주소만 검색합니다.\n- 연락처에 등록된 사람이 아닌 경우 메일을 회신하지 않습니다.\n- 회신할 내용이 없으면 text 의 값은 공백으로 설정하고 is_reply는 false로 설정합니다.\n- 반드시 오늘 날짜를 먼저 확인하세요.\n- 일정이나 미팅 약속을 요청하는 경우 반드시 Cal-Read 툴을 사용하여 일정 확인 후 해당 날짜에 일정이 없는 경우에만 약속을 잡아야함.\n- 반드시 상대방이 요구하는 날짜를 정확하게 확인 할것.\n- 일정에 대한 내용이 메일에 있다면 Cal-Write 툴을 사용하여 일정을 등록해야 함.\n- 일정의 제목은 20자 내외의 제목을 반드시 추가할하고, 메일 내용을 참조하여 설명을 추가할 것.\n- 일정 등록시 미팅 대상에 대한 정보(이메일, 이름 등)를 최대한 자세히 함께 기재할것.\n- 일정을 잡았을 경우 답장에 해당 일정에 대한 정보를 함께 발송할 것(예: 5월 10일 오후 3시에 뵙겠습니다.)\n- 회신을 보낸때 받은 메일의 제목을 쓰게되면 앞에 [Re]를 붙여서 회신임을 알릴것.\n\n-------\n\n날짜 계산 지침\n- 다음주 목요일 등 자연어 날짜가 들어올 경우, 반드시 오늘 날짜 기준으로 정확한 날짜 (예 2025-10-11) 변환 후 처리해야 합니다.\n- 예를 들어 오늘이 금요일이라면 다음주 목요일은 반드시 다음 주의 목요일인 6일 후를 의미합니다. 이렇게 날짜를 직접 계산 하세요.\n- 날짜 계산은 Asia/Seoul 시간을 기준으로 합니다.\n- 일정에 약속 시간 언급이 없는 경우라면 오전 9시 이후, 12시~1시 제외, 오후 6시 이전 중 아무 시간대나 알아서 약속을 잡습니다.",
         "hasOutputParser": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
+      "typeVersion": 2,
       "position": [
-        400,
-        -80
+        -40,
+        20
       ],
-      "id": "0d1a46e6-e693-4d2f-8dcb-84f74fd3647b",
+      "id": "7294bc85-63b0-451c-bc04-2a9abff973bd",
       "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4o-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        340,
-        140
+        -40,
+        220
       ],
-      "id": "3ce43872-bae8-4fcb-b67d-04dfd2d3ffae",
+      "id": "b131b4d9-bf5d-42c0-a1cd-d97e4ed23975",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsonSchemaExample": "{\n\t\"is_spam\": \"스팸여부\",\n    \"reason\": \"스팸 판별 이유\"\n}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
-      "position": [
-        460,
-        140
-      ],
-      "id": "bab43139-430d-4130-88dd-823a695acb34",
-      "name": "Structured Output Parser"
     },
     {
       "parameters": {
@@ -63,14 +51,36 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2,
       "position": [
-        -240,
-        -160
+        -840,
+        160
       ],
-      "id": "c1acdb0d-4e68-4873-be7a-87be11d73c05",
-      "name": "NaverEmail",
+      "id": "60c9d2ce-6293-47ad-a2f7-01108246aea7",
+      "name": "Gmail-domsamo(IMAP)",
       "credentials": {
         "imap": {
-          "id": "94JWf8panO4rmZtJ",
+          "id": "KwCj23NvOVJEn6Iw",
+          "name": "Gmail-domsamo"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "postProcessAction": "nothing",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        -20
+      ],
+      "id": "00c8e02c-0d9d-4eca-9e2f-b52c1092e82a",
+      "name": "Naver-domsamo(IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "dH4hX0lCfSYmYKR9",
           "name": "NaverMail"
         }
       }
@@ -80,27 +90,33 @@
         "assignments": {
           "assignments": [
             {
-              "id": "7db994db-22ca-457b-924f-d926baa59226",
+              "id": "bb79cee9-b2dc-4750-b0dd-5caac7dd7639",
               "name": "subject",
               "value": "={{ $json.subject }}",
               "type": "string"
             },
             {
-              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
+              "id": "dcded7cb-fa61-4cb7-a705-fa0843e7b751",
               "name": "from",
               "value": "={{ $json.from.value[0].address }}",
               "type": "string"
             },
             {
-              "id": "04b2ea04-8414-4ca1-8ca0-338b5e51fa56",
+              "id": "b8b41c7c-a061-4e37-9812-8d97560dedba",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "bb3540c7-d26d-4ec6-9686-f66131f5b695",
               "name": "name",
               "value": "={{ $json.from.value[0].name }}",
               "type": "string"
             },
             {
-              "id": "bc258476-f039-4435-93ad-4479402143e2",
-              "name": "text",
-              "value": "={{ $json.text }}",
+              "id": "18a26669-bc3b-411f-a306-6dd9600ccd8c",
+              "name": "to",
+              "value": "={{ $json.to.value[0].address }}",
               "type": "string"
             }
           ]
@@ -110,10 +126,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -100,
-        -160
+        -640,
+        -20
       ],
-      "id": "9a7fd5d2-57f8-4da4-b5f6-08d4d7efd806",
+      "id": "841157f0-e0fc-4b4c-bc0c-40517450fd17",
       "name": "Naver Fields"
     },
     {
@@ -121,27 +137,21 @@
         "assignments": {
           "assignments": [
             {
-              "id": "b944a08b-378f-4d9f-8726-b4b893432c35",
+              "id": "bb79cee9-b2dc-4750-b0dd-5caac7dd7639",
               "name": "subject",
               "value": "={{ $json.subject }}",
               "type": "string"
             },
             {
-              "id": "b8b36de3-0c86-42ff-93db-855d93e0ba09",
+              "id": "cd897edd-cf54-46fa-a598-a24d5b117488",
               "name": "from",
-              "value": "={{ $json.from }}",
+              "value": "={{ $json.from.value[0].address }}",
               "type": "string"
             },
             {
-              "id": "902f71aa-78a9-4c41-bf0c-16a7c68d97d9",
+              "id": "067140f3-3b80-4652-a869-8e1a39993e9c",
               "name": "text",
               "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "deabfeb8-6a89-40fc-848d-cc3ecbe20201",
-              "name": "name",
-              "value": "={{ $json.name }}",
               "type": "string"
             }
           ]
@@ -151,10 +161,58 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
-        -80
+        -640,
+        160
       ],
-      "id": "a7a146cf-8e88-4494-aa30-4dc0b223f0f6",
+      "id": "5a362614-cbce-465f-a8aa-b362105d6de8",
+      "name": "Gmail Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af0902d-1ed4-45e3-8f7c-7f02de6fd0c8",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "770fd473-61d5-4c22-b951-311ed1cf861c",
+              "name": "from",
+              "value": "={{ $json.from }}",
+              "type": "string"
+            },
+            {
+              "id": "ad0bcb68-5c39-4f53-8309-074b6fe7076c",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "285c38fe-eff3-40f1-8833-a1ae39f56c73",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "c1023191-8e0b-48b7-9bf1-1477c4790b49",
+              "name": "to",
+              "value": "={{ $json.to }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -420,
+        20
+      ],
+      "id": "04b59a96-5ff5-4735-8763-fd4b8c8cf841",
       "name": "MAIL DATA"
     },
     {
@@ -162,9 +220,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "value": "e2efa5b755d3b521b173fd72be836dede264e05a293a3fc979fc46a77aaa8896@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "N8N_TEST"
+          "cachedResultName": "n8n_test"
         },
         "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
         "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
@@ -173,14 +231,14 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        460,
-        140
+        80,
+        220
       ],
-      "id": "70a01e53-dd2c-4d9c-9d65-2d66ccfe2d32",
+      "id": "9b87dc12-dfbb-49a0-9c99-00bab265286a",
       "name": "Cal-Read",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "irKVjHpfenl4xbbA",
+          "id": "sIQNWWUBopRg5Au9",
           "name": "Google Calendar account"
         }
       }
@@ -189,9 +247,9 @@
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "ea434dfbd456b688af944622dde6fb65d43e9b213dffed2438d706169de8a175@group.calendar.google.com",
+          "value": "e2efa5b755d3b521b173fd72be836dede264e05a293a3fc979fc46a77aaa8896@group.calendar.google.com",
           "mode": "list",
-          "cachedResultName": "N8N_TEST"
+          "cachedResultName": "n8n_test"
         },
         "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
         "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
@@ -203,75 +261,17 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        560,
-        140
+        200,
+        220
       ],
-      "id": "7d5bc3f6-5206-40c1-a27e-8437652ed451",
+      "id": "a8b29d92-b425-46b0-a304-dbda75cb22cf",
       "name": "Cal-Write",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "irKVjHpfenl4xbbA",
+          "id": "sIQNWWUBopRg5Au9",
           "name": "Google Calendar account"
         }
       }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "7db994db-22ca-457b-924f-d926baa59226",
-              "name": "subject",
-              "value": "={{ $json.subject }}",
-              "type": "string"
-            },
-            {
-              "id": "ae0fad2a-8f1f-4046-9720-8583c3640d8e",
-              "name": "from",
-              "value": "={{ $json.from.value[0].address }}",
-              "type": "string"
-            },
-            {
-              "id": "4bc4a8f9-f51b-49b6-9953-a228ad4cdbc8",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -100,
-        20
-      ],
-      "id": "6741a9b0-e87b-4d07-80c6-8f6b978b8150",
-      "name": "Google Fields",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "postProcessAction": "nothing",
-        "format": "resolved",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.emailReadImap",
-      "typeVersion": 2,
-      "position": [
-        -240,
-        20
-      ],
-      "id": "0c9900a3-5d1f-4ee4-b980-f4d7fe1ee1f9",
-      "name": "GmailEmail",
-      "credentials": {
-        "imap": {
-          "id": "0W6qSn0eYoxM9pMM",
-          "name": "Gmail"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -282,15 +282,15 @@
       "type": "n8n-nodes-base.dateTime",
       "typeVersion": 2,
       "position": [
-        240,
-        -80
+        -260,
+        20
       ],
-      "id": "c940fa52-c8d9-4a69-8cf7-5e674013aa44",
+      "id": "0ce281d1-f973-42d8-b66e-197fa2ef4e5d",
       "name": "Date & Time"
     },
     {
       "parameters": {
-        "fromEmail": "=nambaksa2mail@naver.com",
+        "fromEmail": "={{ $json.output.from }}",
         "toEmail": "={{ $json.output.to }}",
         "subject": "={{ $json.output.subject }}",
         "emailFormat": "text",
@@ -300,42 +300,40 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        940,
-        -160
+        480,
+        -80
       ],
-      "id": "c9009494-b90e-4347-97a6-612d069e564b",
-      "name": "Send Email",
-      "webhookId": "a45e29df-0570-4690-977c-9e85d917103f",
+      "id": "d7678f92-7b08-4b9b-8899-fb5455f06bda",
+      "name": "Send email",
+      "webhookId": "9def745c-9212-4ec5-94e3-555368d61ccd",
       "credentials": {
         "smtp": {
-          "id": "vp0B9xe6nxRPgC1n",
-          "name": "SMTP account"
+          "id": "QeMd9pzeuVVgGtUx",
+          "name": "SMTP-Naver"
         }
       }
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"subject\": \"메일 제목\",\n  \"text\": \"메일 내용\",\n  \"from\": \"nambaksa2mail@naver.com\",\n  \"to\": \"보낸 사람 메일 주소\",\n  \"is_reply\": \"회신 여부\"\n}"
+        "jsonSchemaExample": "{\n\t\"subject\": \"메일 제목\",\n\t\"text\": \"메일 내용\",\n    \"from\" : \"보낸 사람 메일 주소\",\n    \"to\" : \"domsamo@naver.com\",\n    \"is_reply\" : \"회신 여부\"\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
+      "typeVersion": 1.3,
       "position": [
-        760,
-        140
+        440,
+        220
       ],
-      "id": "e4d6bc19-a609-4cfd-9b33-c401a26d59d5",
-      "name": "Structured Output Parser1"
+      "id": "916af03e-ed66-41a5-9817-554fab5e7a19",
+      "name": "Structured Output Parser"
     },
     {
       "parameters": {
         "operation": "getAll",
         "fields": [
-          "birthdays",
           "emailAddresses",
-          "genders",
+          "addresses",
+          "birthdays",
           "names",
-          "nicknames",
-          "occupations",
           "phoneNumbers"
         ],
         "useQuery": true,
@@ -344,14 +342,14 @@
       "type": "n8n-nodes-base.googleContactsTool",
       "typeVersion": 1,
       "position": [
-        660,
-        140
+        320,
+        220
       ],
-      "id": "c4ebe888-7186-4366-9314-b4c89ea4f716",
+      "id": "a363aab7-c191-42fe-8022-b74252126073",
       "name": "Contacts",
       "credentials": {
         "googleContactsOAuth2Api": {
-          "id": "55aB7ITstjCTO0gp",
+          "id": "C2xx2D0FyhTlJiJ3",
           "name": "Google Contacts account"
         }
       }
@@ -376,7 +374,7 @@
                       "type": "string",
                       "operation": "equals"
                     },
-                    "id": "6bdb2450-cd47-4fb3-81b9-2bb4069935b0"
+                    "id": "f71ce4c6-b02d-4d77-8b8f-1dbf723567fe"
                   }
                 ],
                 "combinator": "and"
@@ -392,7 +390,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "975b44a8-165d-487d-b859-ef2a95d97492",
+                    "id": "fe28d946-9aec-41bc-87a9-e88acc81d5ad",
                     "leftValue": "={{ $json.output.is_reply }}",
                     "rightValue": "false",
                     "operator": {
@@ -412,163 +410,14 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        740,
-        -80
+        320,
+        20
       ],
-      "id": "896cbe6b-8eb2-4437-8554-31b83171761b",
+      "id": "abc99979-d91c-442b-91a9-d51a4cc04d5b",
       "name": "Switch"
     }
   ],
-  "pinData": {
-    "NaverEmail": [
-      {
-        "json": {
-          "headers": {
-            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; d=naver.com; s=arc-20180730; t=1744305393;\r\n\tcv=none; b=Qnq2Z4qcm5eoOKnqZcYbJfBzvIOsvJTM9N+saPLBevUIgiptQh1r6GeAiFm7\r\n\t 56eXgECmDAkTIi0QHncw0QcenvZ7BxoDrWP4MubTpZ4fHZNKVmREaWYWOaD0q1Gb0IE7wk\r\n\t d5Up1wpbmKNZE8KZ/IBLWQMae7SPWH2u8f8eVt6yws3z1Y3JKF0A+AP49T3qV3k3RAMiFP\r\n\t LuzCf2Wne+1CXHo1pNUSTcLnd8dsPbaRe+O+V/KTwSZ171pmAxYGA3ia9qA4W/qWPT33JK\r\n\t C4FIjWI5Jy6e0umE1S8jcZ0y2n2gFIs+sZ9DX6SjEBzeQTS2DFS9a9uEOC9NqH18bHx4vl\r\n\t bQ==",
-            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; d=naver.com; s=arc-20180730;\r\n\tt=1744305393; c=relaxed/relaxed;\r\n\tbh=zI05+eBxo48Tzkpci6ya0RgFCjmvhbDfSUJdlTBl+F8=;\r\n\th=dkim-signature:date:from:to:subject:message-id; b=LccBVam/0Dm8ot924Mv\r\n\t 3JV3Z4jbmhUL50O1zSF5X19rBsUFbIUhQjIwui7etSqvR63XCD9rlR5zBjMe++xFI5ECz8\r\n\t mlkemusu7f+zvjfR7FOXgxCBnTS2YlLVEUZAJRqNTKerHhgEax+Ltb3OIs69Yl3/F+As60\r\n\t DSgGgn/91XRvd9fZf1Adr3fohYqHG+zmjziqXohPrQvWnEIgIOYKBxeBmkJ63YFKel7Gq3\r\n\t SWe8MUeEZfaiCE2na/WZiYGt8e4LH9s1JugcGvwOD+X+kRcvj5HzR3PSJCXykUb0008vem\r\n\t hz7JN4dzqm2mTVOz7t7h4c8rznHA3Zd1gy64keckrvw==",
-            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.naver.com; \r\n  spf=pass (mx.naver.com: domain of postmaster@nambaksa.kr designates 14.56.157.195 as permitted sender) smtp.mailfrom=postmaster@nambaksa.kr;\r\n  dkim=fail (no key for signature) header.i=@nambaksa.kr",
-            "return-path": "Return-Path: <postmaster@nambaksa.kr>",
-            "x-wm-dns-ptr": "X-WM-Dns-Ptr: none",
-            "received-spf": "Received-SPF: pass (mx.naver.com: domain of postmaster@nambaksa.kr designates 14.56.157.195 as permitted sender)\r\n  client-ip=14.56.157.195; x-iptype=default;",
-            "authentication-results": "Authentication-Results: mail.nambaksa.kr (amavisd-new); dkim=pass\r\n\treason=\"pass (just generated, assumed good)\" header.d=nambaksa.kr",
-            "x-naver-esv": "X-Naver-ESV: wmRn+6J4p63CbHmq7BwdbXFYKxbwFoKZjJ+Y",
-            "x-session-ip": "X-Session-IP: 14.56.157.195",
-            "received": "Received: from localhost (localhost [127.0.0.1])\r\n\tby mail.nambaksa.kr (Postfix) with ESMTPSA id 4ZYRLQ3YpBz17k28\r\n\tfor <nambaksa2mail@naver.com>; Thu, 10 Apr 2025 17:16:30 +0000 (UTC)",
-            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nambaksa.kr; h=\r\n\tcontent-transfer-encoding:content-type:message-id:user-agent\r\n\t:subject:to:from:date:mime-version; s=dkim; t=1744305390; x=\r\n\t1746897391; bh=zI05+eBxo48Tzkpci6ya0RgFCjmvhbDfSUJdlTBl+F8=; b=j\r\n\tKGUYsqRbCrpZpa5BGmVsgCxEfnQxsyImkSHXtfKvqdjMAs0tr7TAQ9wJz2NUbyVf\r\n\trrlY4MtQ7jtC7pSAew6JHP7wiLUzFQ+ZYpa531ysFSoRzpAv+FrCujFNlfQ1TozR\r\n\tLOT0jKP6S2hf3qRr25j74VHjkUhsaW219EwX5WbTkk=",
-            "x-amavis-modified": "X-Amavis-Modified: Mail body modified (using disclaimer) - mail.nambaksa.kr",
-            "x-virus-scanned": "X-Virus-Scanned: amavisd-new at mail.nambaksa.kr",
-            "mime-version": "MIME-Version: 1.0",
-            "date": "Date: Thu, 10 Apr 2025 17:16:30 +0000",
-            "from": "From: =?UTF-8?Q?=EA=B4=80=EB=A6=AC=EC=9E=90?= <postmaster@nambaksa.kr>",
-            "to": "To: =?UTF-8?Q?=EB=82=A8=EB=B0=95=EC=82=AC_Naver?= <nambaksa2mail@naver.com>",
-            "subject": "Subject: =?UTF-8?Q?=EC=95=88=EB=85=95=ED=95=98=EC=84=B8=EC=9A=94=2E_?=\r\n =?UTF-8?Q?=EB=AF=B8=ED=8C=85_=EA=B4=80=EB=A0=A8_=EB=82=B4=EC=9A=A9?=\r\n =?UTF-8?Q?=EC=9E=85=EB=8B=88=EB=8B=A4=2E?=",
-            "user-agent": "User-Agent: Roundcube Webmail",
-            "message-id": "Message-ID: <5a2f9da5a0e46b4317cd9399bcaa4937@nambaksa.kr>",
-            "x-sender": "X-Sender: postmaster@nambaksa.kr",
-            "content-type": "Content-Type: text/plain; charset=UTF-8;\r\n format=flowed",
-            "content-transfer-encoding": "Content-Transfer-Encoding: quoted-printable"
-          },
-          "text": "안녕하세요.\n다음주 목요일 미팅 일정 어떠신지 문의드립니다.\n회신 부탁드립니다.\n",
-          "textAsHtml": "<p>&#xC548;&#xB155;&#xD558;&#xC138;&#xC694;.<br/>&#xB2E4;&#xC74C;&#xC8FC; &#xBAA9;&#xC694;&#xC77C; &#xBBF8;&#xD305; &#xC77C;&#xC815; &#xC5B4;&#xB5A0;&#xC2E0;&#xC9C0; &#xBB38;&#xC758;&#xB4DC;&#xB9BD;&#xB2C8;&#xB2E4;.<br/>&#xD68C;&#xC2E0; &#xBD80;&#xD0C1;&#xB4DC;&#xB9BD;&#xB2C8;&#xB2E4;.</p>",
-          "subject": "안녕하세요. 미팅 관련 내용입니다.",
-          "date": "2025-04-10T17:16:30.000Z",
-          "to": {
-            "value": [
-              {
-                "address": "nambaksa2mail@naver.com",
-                "name": "남박사 Naver"
-              }
-            ],
-            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">&#xB0A8;&#xBC15;&#xC0AC; Naver</span> &lt;<a href=\"mailto:nambaksa2mail@naver.com\" class=\"mp_address_email\">nambaksa2mail@naver.com</a>&gt;</span>",
-            "text": "\"남박사 Naver\" <nambaksa2mail@naver.com>"
-          },
-          "from": {
-            "value": [
-              {
-                "address": "postmaster@nambaksa.kr",
-                "name": "관리자"
-              }
-            ],
-            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">&#xAD00;&#xB9AC;&#xC790;</span> &lt;<a href=\"mailto:postmaster@nambaksa.kr\" class=\"mp_address_email\">postmaster@nambaksa.kr</a>&gt;</span>",
-            "text": "\"관리자\" <postmaster@nambaksa.kr>"
-          },
-          "messageId": "<5a2f9da5a0e46b4317cd9399bcaa4937@nambaksa.kr>",
-          "html": false
-        }
-      },
-      {
-        "json": {
-          "headers": {
-            "x-session-id": "X-Session-ID: qt1LcmSAR4yAKLtoC+AlDg",
-            "mime-version": "MIME-Version: 1.0",
-            "message-id": "Message-ID: <1744308996511.7fa93.66423876@cvowl1013.nm>",
-            "date": "Date: Fri, 11 Apr 2025 03:16:36 +0900",
-            "from": "From: =?utf-8?B?64Sk7J2067KE?= <account_noreply@navercorp.com>",
-            "to": "To: <nambaksa2mail@naver.com>",
-            "subject": "Subject: =?utf-8?B?MuuLqOqzhCDsnbjspp3snYQg7JyE7ZWcIOyVoO2UjOumrOy8gOydtOyFmCDruYTrsIDrsog=?=\r\n\t=?utf-8?B?7Zi4IOyDneyEsQ==?=",
-            "x-works-filteraction": "X-Works-FilterAction: yes",
-            "feedback-id": "Feedback-ID: :naver_id:10.112.89.186:NaverOwl1",
-            "x-works-send-opt": "X-Works-Send-Opt: cPFYjHwYjHm2UVg2KHwYUVg=",
-            "content-type": "Content-Type: multipart/alternative;\r\n\tboundary=\"-----Boundary-WM=_7fa89fe05700.1744308996525\""
-          },
-          "html": "<!DOCTYPE html><html lang=\"ko\"><head>    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">    <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">    <title>네이버 회원정보 안내</title>    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi, minimal-ui\" />    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" /></head><body leftmargin=\"0\" topmargin=\"0\" marginwidth=\"0\" marginheight=\"0\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"  style=\"width:100%;background-color:#f8f8f9;letter-spacing:-1px\" align=\"center\">    <tr>        <td align=\"center\">            <!-- 아웃룩용 max-width 핵 -->            <!--[if (gte mso 9)|(IE)]>            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">                <tr>                    <td width=\"595\">            <![endif]-->            <div style=\"max-width:595px; margin:0 auto\">                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:595px;width:100%;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;background-color:#fff;-webkit-text-size-adjust:100%;text-align:left\" align=\"center\">                    <!-- Header -->                    <tr><td height=\"30\"></td></tr>                    <tr>                        <td style=\"padding-right:27px; padding-left:21px\">                            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" >                                <tr>                                    <td style=\"\" width=\"61\">                                        <img src=\"https://ssl.pstatic.net/static/common/ems/nid_dm/logo_201412.gif\" alt=\"Naver\" width=\"61\"/>                                    </td>                                    <td style=\"padding-left:5px\">                                        <img src=\"https://ssl.pstatic.net/static/common/ems/nid_dm/nid_201412.gif\" alt=\"회원정보\" width=\"42\"/>                                    </td>                                </tr>                            </table>                        </td>                    </tr>                    <tr><td height=\"13\"></td></tr>                    <tr>                        <td style=\"padding-right:27px; padding-left:18px;line-height:34px;font-size:29px;color:#424240;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                            2단계 인증을 위한<br/><span style=\"color:#1ec800\">애플리케이션 비밀번호가 생성되었습니다.</span>                        </td>                    </tr>                    <tr><td height=\"22\"></td></tr>                    <tr><td height=\"1\" style=\"background-color: #e5e5e5;\"></td></tr>                    <!-- //Header -->                    <tr>                        <td style=\"padding-top:24px; padding-right:27px; padding-bottom:32px; padding-left:20px\">                            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                <tr><td height=\"6\"></td></tr>                                <tr style=\"display:none;\">                                    <td style=\"padding:9px 15px 10px;background-color:#f4f4f4;font-size:14px;color:#000;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        이 메일은 <span style=\"color:#03c75a\">남박사(namb****)</span>의 연락처에 등록된 메일 주소로 발송되었습니다. 본인의 네이버 계정이 아니라면 <a href=\"#\" target=\"_blank\" style=\"color:#0075c8;text-decoration:underline\"><span style=\"color:#0075c8\">여기에서 수정</span></a>하세요. 해당 페이지는 <strong>별도의 로그인을 요구하지 않습니다. 또한 주소창에 [NAVER Corp.]와 자물쇠 마크</strong>가 있으니 꼭 확인하세요.                                    </td>                                </tr>                                <tr style=\"display:none;\"><td height=\"24\"></td></tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        안녕하세요 <span style=\"color:#009E25\">남박사(namb****)</span> 회원님.<br>                                        2단계 인증을 위한 애플리케이션 비밀번호 생성 내역을 안내해 드립니다.                                    </td>                                </tr>                                <tr><td height=\"24\"></td></tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        <table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;margin:0;padding:0\">                                            <tr>                                                <td height=\"23\" style=\"font-weight:bold;color:#000;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                    애플리케이션 비밀번호 생성 정보                                                </td>                                            </tr>                                            <tr>                                                <td height=\"2\" style=\"background:#424240\"></td>                                            </tr>                                            <tr>                                                <td height=\"20\"></td>                                            </tr>                                            <tr>                                                <td>                                                    <table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;margin:0;padding:0\">                                                        <tr>                                                            <td width=\"110\" style=\"padding-bottom:5px;color:#696969;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                일시                                                            </td>                                                            <td style=\"padding-bottom:5px;color:#000;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                2025-04-11(금) 03:16                                                            </td>                                                        </tr>                                                        <tr>                                                            <td width=\"110\" style=\"padding-bottom:5px;color:#696969;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                생성 위치                                                            </td>                                                            <td style=\"padding-bottom:5px;;color:#000;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                내정보(네이버ID)> 보안설정> 2단계 인증                                                            </td>                                                        </tr>                                                        <tr>                                                            <td width=\"110\" style=\"padding-bottom:5px;color:#696969;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                앱 이름                                                            </td>                                                            <td style=\"padding-bottom:5px;color:#009E25;line-height:23px;vertical-align:top;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                                                N8NSEND                                                            </td>                                                        </tr>                                                    </table>                                                </td>                                            </tr>                                            <tr>                                                <td height=\"20\"></td>                                            </tr>                                            <tr>                                                <td height=\"1\" style=\"background:#d5d5d5\"></td>                                            </tr>                                        </table>                                    </td>                                </tr>                                <tr><td height=\"24\"></td></tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        생성한 비밀번호를 해당 애플리케이션의 로그인 화면 비밀번호란에 넣어 주세요.<br>                                        애플리케이션 비밀번호는 한 번 생성한 후에는 보안을 위해 다시 보여드리지 않습니다.                                    </td>                                </tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        <a href=\"https://m.help.naver.com/support/alias/membership/m.membership/m.membership_43.naver\" style=\"color:#0075c8\" target=\"_blank\">도움말 보기</a>                                    </td>                                </tr>                                <tr><td height=\"24\"></td></tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        <strong>                                            회원님의 활동이 아닌가요?                                        </strong>                                    </td>                                </tr>                                <tr><td height=\"14\"></td></tr>                                <tr>                                    <td style=\"font-size:14px;color:#696969;line-height:24px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;\">                                        더 이상 사용하지 않거나 의심스러운 애플리케이션 비밀번호를 삭제하세요.<br>                                        ▶ 내정보(네이버ID)> 보안설정> <a href=\"https://nid.naver.com/user2/api/route.nhn?m=route2StepVerif&lang=ko_KR\" style=\"color:#0075c8\" target=\"_blank\">2단계 인증 관리하기</a>: 생성일자, 사용일자 확인 및 삭제                                    </td>                                </tr>                            </table>                        </td>                    </tr>                    <!-- footer -->                    <tr>                        <td style=\"padding-top:26px;padding-left:21px;padding-right:21px;padding-bottom:13px;background:#f9f9f9;font-size:12px;font-family:'나눔고딕',NanumGothic,'맑은고딕',Malgun Gothic,'돋움',Dotum,Helvetica,'Apple SD Gothic Neo',Sans-serif;color:#696969;line-height:17px\">                            본 메일은 발신전용 입니다. 네이버 서비스관련 궁금하신 사항은 네이버 <a href=\"https://help.naver.com/support/alias/membership/p.membership/p.membership_26.naver\" style=\"color:#696969;font-weight:bold;text-decoration:underline\">고객센터</a>에서 확인해주세요.                        </td>                    </tr>                    <tr>                        <td style=\"padding-left:21px;padding-right:21px;padding-bottom:57px;background:#f9f9f9;font-size:12px;font-family:Helvetica;color:#696969;line-height:17px\">                            Copyright ⓒ <strong>NAVER</strong> Corp. All Rights Reserved.                        </td>                    </tr>                    <!-- //footer -->                </table>            </div>            <!--[if mso]>            </td>            </tr>            </table>            <![endif]-->        </td>    </tr></table></body></html><table style='display:none'><tr><td><img src=\"https://mail.naver.com/external/owl1/JqKdFquYaqUraxv_KAKdFxuw7o-4Mxvq7oMrFAUqaAbrtzFrWX-nKxgwKZl5Wx_sW4JRM4JObruZW6JGWuI5MBp0bSloWrd.gif\" border=\"0\"/></td></tr></table>",
-          "text": "\n<!-- 아웃룩용 max-width 핵 --> <!--[if (gte mso 9)|(IE)]> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"> <tr> <td width=\"595\"> <![endif]-->\n\n<!-- Header -->\n\n\n2단계 인증을 위한애플리케이션 비밀번호가 생성되었습니다.\n\n\n<!-- //Header -->\n\n이 메일은 남박사(namb****)의 연락처에 등록된 메일 주소로 발송되었습니다. 본인의 네이버 계정이 아니라면 여기에서 수정하세요. 해당 페이지는 별도의 로그인을 요구하지 않습니다. 또한 주소창에 [NAVER Corp.]와 자물쇠 마크가 있으니 꼭 확인하세요.\n\n안녕하세요 남박사(namb****) 회원님.\n2단계 인증을 위한 애플리케이션 비밀번호 생성 내역을 안내해 드립니다.\n\n\n애플리케이션 비밀번호 생성 정보\n\n\n\n일시 2025-04-11(금) 03:16\n생성 위치 내정보(네이버ID)> 보안설정> 2단계 인증\n앱 이름 N8NSEND\n\n\n\n\n\n\n\n생성한 비밀번호를 해당 애플리케이션의 로그인 화면 비밀번호란에 넣어 주세요.\n애플리케이션 비밀번호는 한 번 생성한 후에는 보안을 위해 다시 보여드리지 않습니다.\n도움말 보기\n\n회원님의 활동이 아닌가요?\n\n더 이상 사용하지 않거나 의심스러운 애플리케이션 비밀번호를 삭제하세요.\n▶ 내정보(네이버ID)> 보안설정> 2단계 인증 관리하기: 생성일자, 사용일자 확인 및 삭제\n\n\n<!-- footer --> 본 메일은 발신전용 입니다. 네이버 서비스관련 궁금하신 사항은 네이버 고객센터에서 확인해주세요.\nCopyright ⓒ NAVER Corp. All Rights Reserved.\n<!-- //footer -->\n<!--[if mso]> </td> </tr> </table> <![endif]-->\n\n",
-          "textAsHtml": "<p>&lt;!-- &#xC544;&#xC6C3;&#xB8E9;&#xC6A9; max-width &#xD575; --&gt; &lt;!--[if (gte mso 9)|(IE)]&gt; &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt; &lt;tr&gt; &lt;td width=&quot;595&quot;&gt; &lt;![endif]--&gt;</p><p>&lt;!-- Header --&gt;</p><p>2&#xB2E8;&#xACC4; &#xC778;&#xC99D;&#xC744; &#xC704;&#xD55C;&#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158; &#xBE44;&#xBC00;&#xBC88;&#xD638;&#xAC00; &#xC0DD;&#xC131;&#xB418;&#xC5C8;&#xC2B5;&#xB2C8;&#xB2E4;.</p><p>&lt;!-- //Header --&gt;</p><p>&#xC774; &#xBA54;&#xC77C;&#xC740; &#xB0A8;&#xBC15;&#xC0AC;(namb****)&#xC758; &#xC5F0;&#xB77D;&#xCC98;&#xC5D0; &#xB4F1;&#xB85D;&#xB41C; &#xBA54;&#xC77C; &#xC8FC;&#xC18C;&#xB85C; &#xBC1C;&#xC1A1;&#xB418;&#xC5C8;&#xC2B5;&#xB2C8;&#xB2E4;. &#xBCF8;&#xC778;&#xC758; &#xB124;&#xC774;&#xBC84; &#xACC4;&#xC815;&#xC774; &#xC544;&#xB2C8;&#xB77C;&#xBA74; &#xC5EC;&#xAE30;&#xC5D0;&#xC11C; &#xC218;&#xC815;&#xD558;&#xC138;&#xC694;. &#xD574;&#xB2F9; &#xD398;&#xC774;&#xC9C0;&#xB294; &#xBCC4;&#xB3C4;&#xC758; &#xB85C;&#xADF8;&#xC778;&#xC744; &#xC694;&#xAD6C;&#xD558;&#xC9C0; &#xC54A;&#xC2B5;&#xB2C8;&#xB2E4;. &#xB610;&#xD55C; &#xC8FC;&#xC18C;&#xCC3D;&#xC5D0; [NAVER Corp.]&#xC640; &#xC790;&#xBB3C;&#xC1E0; &#xB9C8;&#xD06C;&#xAC00; &#xC788;&#xC73C;&#xB2C8; &#xAF2D; &#xD655;&#xC778;&#xD558;&#xC138;&#xC694;.</p><p>&#xC548;&#xB155;&#xD558;&#xC138;&#xC694; &#xB0A8;&#xBC15;&#xC0AC;(namb****) &#xD68C;&#xC6D0;&#xB2D8;.<br/>2&#xB2E8;&#xACC4; &#xC778;&#xC99D;&#xC744; &#xC704;&#xD55C; &#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158; &#xBE44;&#xBC00;&#xBC88;&#xD638; &#xC0DD;&#xC131; &#xB0B4;&#xC5ED;&#xC744; &#xC548;&#xB0B4;&#xD574; &#xB4DC;&#xB9BD;&#xB2C8;&#xB2E4;.</p><p>&#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158; &#xBE44;&#xBC00;&#xBC88;&#xD638; &#xC0DD;&#xC131; &#xC815;&#xBCF4;</p><p>&#xC77C;&#xC2DC; 2025-04-11(&#xAE08;) 03:16<br/>&#xC0DD;&#xC131; &#xC704;&#xCE58; &#xB0B4;&#xC815;&#xBCF4;(&#xB124;&#xC774;&#xBC84;ID)&gt; &#xBCF4;&#xC548;&#xC124;&#xC815;&gt; 2&#xB2E8;&#xACC4; &#xC778;&#xC99D;<br/>&#xC571; &#xC774;&#xB984; N8NSEND</p><p>&#xC0DD;&#xC131;&#xD55C; &#xBE44;&#xBC00;&#xBC88;&#xD638;&#xB97C; &#xD574;&#xB2F9; &#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158;&#xC758; &#xB85C;&#xADF8;&#xC778; &#xD654;&#xBA74; &#xBE44;&#xBC00;&#xBC88;&#xD638;&#xB780;&#xC5D0; &#xB123;&#xC5B4; &#xC8FC;&#xC138;&#xC694;.<br/>&#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158; &#xBE44;&#xBC00;&#xBC88;&#xD638;&#xB294; &#xD55C; &#xBC88; &#xC0DD;&#xC131;&#xD55C; &#xD6C4;&#xC5D0;&#xB294; &#xBCF4;&#xC548;&#xC744; &#xC704;&#xD574; &#xB2E4;&#xC2DC; &#xBCF4;&#xC5EC;&#xB4DC;&#xB9AC;&#xC9C0; &#xC54A;&#xC2B5;&#xB2C8;&#xB2E4;.<br/>&#xB3C4;&#xC6C0;&#xB9D0; &#xBCF4;&#xAE30;</p><p>&#xD68C;&#xC6D0;&#xB2D8;&#xC758; &#xD65C;&#xB3D9;&#xC774; &#xC544;&#xB2CC;&#xAC00;&#xC694;?</p><p>&#xB354; &#xC774;&#xC0C1; &#xC0AC;&#xC6A9;&#xD558;&#xC9C0; &#xC54A;&#xAC70;&#xB098; &#xC758;&#xC2EC;&#xC2A4;&#xB7EC;&#xC6B4; &#xC560;&#xD50C;&#xB9AC;&#xCF00;&#xC774;&#xC158; &#xBE44;&#xBC00;&#xBC88;&#xD638;&#xB97C; &#xC0AD;&#xC81C;&#xD558;&#xC138;&#xC694;.<br/>&#x25B6; &#xB0B4;&#xC815;&#xBCF4;(&#xB124;&#xC774;&#xBC84;ID)&gt; &#xBCF4;&#xC548;&#xC124;&#xC815;&gt; 2&#xB2E8;&#xACC4; &#xC778;&#xC99D; &#xAD00;&#xB9AC;&#xD558;&#xAE30;: &#xC0DD;&#xC131;&#xC77C;&#xC790;, &#xC0AC;&#xC6A9;&#xC77C;&#xC790; &#xD655;&#xC778; &#xBC0F; &#xC0AD;&#xC81C;</p><p>&lt;!-- footer --&gt; &#xBCF8; &#xBA54;&#xC77C;&#xC740; &#xBC1C;&#xC2E0;&#xC804;&#xC6A9; &#xC785;&#xB2C8;&#xB2E4;. &#xB124;&#xC774;&#xBC84; &#xC11C;&#xBE44;&#xC2A4;&#xAD00;&#xB828; &#xAD81;&#xAE08;&#xD558;&#xC2E0; &#xC0AC;&#xD56D;&#xC740; &#xB124;&#xC774;&#xBC84; &#xACE0;&#xAC1D;&#xC13C;&#xD130;&#xC5D0;&#xC11C; &#xD655;&#xC778;&#xD574;&#xC8FC;&#xC138;&#xC694;.<br/>Copyright &#x24D2; NAVER Corp. All Rights Reserved.<br/>&lt;!-- //footer --&gt;<br/>&lt;!--[if mso]&gt; &lt;/td&gt; &lt;/tr&gt; &lt;/table&gt; &lt;![endif]--&gt;</p>",
-          "subject": "2단계 인증을 위한 애플리케이션 비밀번호 생성",
-          "date": "2025-04-10T18:16:36.000Z",
-          "to": {
-            "value": [
-              {
-                "address": "nambaksa2mail@naver.com",
-                "name": ""
-              }
-            ],
-            "html": "<span class=\"mp_address_group\"><a href=\"mailto:nambaksa2mail@naver.com\" class=\"mp_address_email\">nambaksa2mail@naver.com</a></span>",
-            "text": "nambaksa2mail@naver.com"
-          },
-          "from": {
-            "value": [
-              {
-                "address": "account_noreply@navercorp.com",
-                "name": "네이버"
-              }
-            ],
-            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">&#xB124;&#xC774;&#xBC84;</span> &lt;<a href=\"mailto:account_noreply@navercorp.com\" class=\"mp_address_email\">account_noreply@navercorp.com</a>&gt;</span>",
-            "text": "\"네이버\" <account_noreply@navercorp.com>"
-          },
-          "messageId": "<1744308996511.7fa93.66423876@cvowl1013.nm>"
-        }
-      }
-    ],
-    "Naver Fields": [
-      {
-        "json": {
-          "subject": "안녕하세요. 미팅 관련 내용입니다.",
-          "from": "postmaster@nambaksa.kr",
-          "name": "관리자",
-          "text": "안녕하세요.\n다음주 목요일 미팅 일정 어떠신지 문의드립니다.\n회신 부탁드립니다.\n"
-        }
-      },
-      {
-        "json": {
-          "subject": "2단계 인증을 위한 애플리케이션 비밀번호 생성",
-          "from": "account_noreply@navercorp.com",
-          "name": "네이버",
-          "text": "\n<!-- 아웃룩용 max-width 핵 --> <!--[if (gte mso 9)|(IE)]> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"> <tr> <td width=\"595\"> <![endif]-->\n\n<!-- Header -->\n\n\n2단계 인증을 위한애플리케이션 비밀번호가 생성되었습니다.\n\n\n<!-- //Header -->\n\n이 메일은 남박사(namb****)의 연락처에 등록된 메일 주소로 발송되었습니다. 본인의 네이버 계정이 아니라면 여기에서 수정하세요. 해당 페이지는 별도의 로그인을 요구하지 않습니다. 또한 주소창에 [NAVER Corp.]와 자물쇠 마크가 있으니 꼭 확인하세요.\n\n안녕하세요 남박사(namb****) 회원님.\n2단계 인증을 위한 애플리케이션 비밀번호 생성 내역을 안내해 드립니다.\n\n\n애플리케이션 비밀번호 생성 정보\n\n\n\n일시 2025-04-11(금) 03:16\n생성 위치 내정보(네이버ID)> 보안설정> 2단계 인증\n앱 이름 N8NSEND\n\n\n\n\n\n\n\n생성한 비밀번호를 해당 애플리케이션의 로그인 화면 비밀번호란에 넣어 주세요.\n애플리케이션 비밀번호는 한 번 생성한 후에는 보안을 위해 다시 보여드리지 않습니다.\n도움말 보기\n\n회원님의 활동이 아닌가요?\n\n더 이상 사용하지 않거나 의심스러운 애플리케이션 비밀번호를 삭제하세요.\n▶ 내정보(네이버ID)> 보안설정> 2단계 인증 관리하기: 생성일자, 사용일자 확인 및 삭제\n\n\n<!-- footer --> 본 메일은 발신전용 입니다. 네이버 서비스관련 궁금하신 사항은 네이버 고객센터에서 확인해주세요.\nCopyright ⓒ NAVER Corp. All Rights Reserved.\n<!-- //footer -->\n<!--[if mso]> </td> </tr> </table> <![endif]-->\n\n"
-        }
-      }
-    ],
-    "MAIL DATA": [
-      {
-        "json": {
-          "subject": "안녕하세요. 미팅 관련 내용입니다.",
-          "from": "postmaster@nambaksa.kr",
-          "text": "안녕하세요.\n다음주 목요일 미팅 일정 어떠신지 문의드립니다.\n회신 부탁드립니다.\n",
-          "name": "관리자"
-        }
-      },
-      {
-        "json": {
-          "subject": "2단계 인증을 위한 애플리케이션 비밀번호 생성",
-          "from": "account_noreply@navercorp.com",
-          "text": "\n<!-- 아웃룩용 max-width 핵 --> <!--[if (gte mso 9)|(IE)]> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"> <tr> <td width=\"595\"> <![endif]-->\n\n<!-- Header -->\n\n\n2단계 인증을 위한애플리케이션 비밀번호가 생성되었습니다.\n\n\n<!-- //Header -->\n\n이 메일은 남박사(namb****)의 연락처에 등록된 메일 주소로 발송되었습니다. 본인의 네이버 계정이 아니라면 여기에서 수정하세요. 해당 페이지는 별도의 로그인을 요구하지 않습니다. 또한 주소창에 [NAVER Corp.]와 자물쇠 마크가 있으니 꼭 확인하세요.\n\n안녕하세요 남박사(namb****) 회원님.\n2단계 인증을 위한 애플리케이션 비밀번호 생성 내역을 안내해 드립니다.\n\n\n애플리케이션 비밀번호 생성 정보\n\n\n\n일시 2025-04-11(금) 03:16\n생성 위치 내정보(네이버ID)> 보안설정> 2단계 인증\n앱 이름 N8NSEND\n\n\n\n\n\n\n\n생성한 비밀번호를 해당 애플리케이션의 로그인 화면 비밀번호란에 넣어 주세요.\n애플리케이션 비밀번호는 한 번 생성한 후에는 보안을 위해 다시 보여드리지 않습니다.\n도움말 보기\n\n회원님의 활동이 아닌가요?\n\n더 이상 사용하지 않거나 의심스러운 애플리케이션 비밀번호를 삭제하세요.\n▶ 내정보(네이버ID)> 보안설정> 2단계 인증 관리하기: 생성일자, 사용일자 확인 및 삭제\n\n\n<!-- footer --> 본 메일은 발신전용 입니다. 네이버 서비스관련 궁금하신 사항은 네이버 고객센터에서 확인해주세요.\nCopyright ⓒ NAVER Corp. All Rights Reserved.\n<!-- //footer -->\n<!--[if mso]> </td> </tr> </table> <![endif]-->\n\n",
-          "name": "네이버"
-        }
-      }
-    ],
-    "Date & Time": [
-      {
-        "json": {
-          "currentDate": "2025-04-11T14:14:54.078+09:00"
-        }
-      },
-      {
-        "json": {
-          "currentDate": "2025-04-11T14:14:54.079+09:00"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "OpenAI Chat Model": {
       "ai_languageModel": [
@@ -579,11 +428,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Structured Output Parser": {
-      "ai_outputParser": [
-        []
       ]
     },
     "AI Agent": {
@@ -597,7 +441,18 @@
         ]
       ]
     },
-    "NaverEmail": {
+    "Gmail-domsamo(IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Gmail Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Naver-domsamo(IMAP)": {
       "main": [
         [
           {
@@ -609,6 +464,17 @@
       ]
     },
     "Naver Fields": {
+      "main": [
+        [
+          {
+            "node": "MAIL DATA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Fields": {
       "main": [
         [
           {
@@ -652,28 +518,6 @@
         ]
       ]
     },
-    "Google Fields": {
-      "main": [
-        [
-          {
-            "node": "MAIL DATA",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "GmailEmail": {
-      "main": [
-        [
-          {
-            "node": "Google Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Date & Time": {
       "main": [
         [
@@ -685,7 +529,7 @@
         ]
       ]
     },
-    "Structured Output Parser1": {
+    "Structured Output Parser": {
       "ai_outputParser": [
         [
           {
@@ -711,7 +555,7 @@
       "main": [
         [
           {
-            "node": "Send Email",
+            "node": "Send email",
             "type": "main",
             "index": 0
           }
@@ -724,11 +568,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "97abe504-fb24-435e-88d9-82ad7d016d75",
+  "versionId": "fa15a93f-963f-4245-8de6-24a5d68f99b1",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "BMgLlmn8AxsAyTBv",
+  "id": "PR3fo14t7tc7indS",
   "tags": []
 }

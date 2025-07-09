@@ -3,94 +3,70 @@
   "nodes": [
     {
       "parameters": {
-        "options": {
-          "systemMessage": "=당신은 실시간 정보를 검색하기 위해 도구를 동적으로 통합하고 실행할 수 있는 고도로 효율적인 AI 자동화 어시스턴트입니다.\n\n- 항상 도구를 실행하기 전에 사용 가능한 도구 목록을 먼저 확인하세요.\n\n- 도구가 사용자 쿼리에 가장 관련성이 높은 것을 기반으로 선택되었는지 확인하십시오.\n\n- 도구 목록을 나열한 후에만 작업에 가장 적합한 도구를 자동으로 결정하고 실행하십시오.\n\n- MCP도구는 연속적으로 요청하지 않고 반드시 요청된 결과가 반환되면 순차적으로 수행해야 합니다."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
-      "position": [
-        -140,
-        -140
-      ],
-      "id": "953b84f8-968a-44ae-bca2-3f7f52b55ab9",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -320,
-        -140
+        0,
+        0
       ],
-      "id": "13ea135a-0a42-4b67-8fd1-db807293455f",
+      "id": "a2bd44aa-2d2a-4df1-abc0-128b348287bb",
       "name": "When chat message received",
-      "webhookId": "b2cabc86-5595-4cdf-8e86-4bacae889779"
+      "webhookId": "9e5ccccb-3736-48b3-aac1-ed786ea9c25f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=당신은 실시간 정보를 검색하기 위해 도구를 동적으로 통합하고 실행할 수 있는 고도로 효율적인 AI 자동화 어시스턴트입니다.\n\n- 항상 도구를 실행하기 전에 사용 가능한 도구 목록을 먼저 확인하세요.\n- 도구가 사용자 쿼리에 가장 관련성이 높은 것을 기반으로 선택되었는지 확인하세요.\n- 도구 목록을 나열한 후에만 작업에 가장 적합한 도구를 자동으로 결정하고 실행하세요.\n- MCP도구는 연속적으로 요청하지 않고 반드시 요청된 결과가 반환되면 순차적으로 수행해야 합니다."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "ed46d24e-f84e-418a-bca2-90c45d0ed632",
+      "name": "AI Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4o-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -280,
-        60
+        200,
+        180
       ],
-      "id": "c72200f8-7e93-4653-9111-7b2d0e719893",
+      "id": "5b4dad25-7651-4928-b914-84e192ff4473",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Iy5TlhG2RJOqeaMY",
+          "id": "FdrbvMNQbYrT6W62",
           "name": "OpenAi account"
         }
       }
     },
     {
       "parameters": {
-        "sseEndpoint": "https://a1da-14-56-157-195.ngrok-free.app/mcp/2c1dbc5c-d3c1-4caf-8d45-630fd5bf5e02/sse"
+        "sseEndpoint": "http://localhost:5678/mcp/955b83d3-f2fc-4d54-a264-e1a8767c1fa9"
       },
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        20,
-        80
+        460,
+        180
       ],
-      "id": "848bd019-6374-4cea-9b0c-281a0ff15e0d",
+      "id": "5a985faa-8a3c-45dc-bba2-f2fb03fd7332",
       "name": "MCP Client"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "claude-3-5-sonnet-20241022",
-          "mode": "list",
-          "cachedResultName": "Claude 3.5 Sonnet (New)"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
-      "typeVersion": 1.3,
-      "position": [
-        -160,
-        60
-      ],
-      "id": "21dab3a8-36ff-48ec-bd56-a29f48a94d89",
-      "name": "Anthropic Chat Model",
-      "credentials": {
-        "anthropicApi": {
-          "id": "NKHX09AnnDh6iyBZ",
-          "name": "Anthropic account"
-        }
-      }
     }
   ],
   "pinData": {},
@@ -108,7 +84,13 @@
     },
     "OpenAI Chat Model": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "MCP Client": {
@@ -121,28 +103,17 @@
           }
         ]
       ]
-    },
-    "Anthropic Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "61358f4c-287c-4587-8370-87610b6f29c7",
+  "versionId": "7beaa32d-e45a-44b4-a40b-c4f5dfbcd91b",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+    "instanceId": "ff6d4936f6d7bb8554affc8f6ff012ed4476cbd87b8d3638b53b1f3c45477576"
   },
-  "id": "8UhVOSofU2DNxm8o",
+  "id": "QfPqCh6SpiY4UBSn",
   "tags": []
 }
