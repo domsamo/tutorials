@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - C:\N8N\postgres:/var/lib/postgresql/data
+    networks:
+      - demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - C:\N8N\ollama:/root/.ollama
+    networks:
+      - demo
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - C:\N8N\qdrant:/qdrant/storage
+    networks:
+      - demo
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    user: root
+    ports:
+      - "${N8N_PORT}:${N8N_PORT}"
+    environment:
+      - WEBHOOK_URL=https://a59972d57213.ngrok-free.app
+      - N8N_SECURE_COOKIE=false
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_USER_MANAGEMENT_JWT_SECRET}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_BASE_URL=${N8N_BASE_URL}
+      - OLLAMA_HOST=${OLLAMA_HOST}
+      - QDRANT_HOST=${QDRANT_HOST}
+      - QDRANT_PORT=${QDRANT_PORT}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    volumes:
+      - C:\N8N\n8n:/home/node/.n8n
+      - C:\N8N\shared:/data/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+      - demo
+    restart: unless-stopped
+
+  n8n-import:
+    image: n8nio/n8n:latest
+    container_name: n8n-import
+    entrypoint: /bin/sh
+    command:
+      - "-c"
+      - >
+        n8n import:credentials --separate --input=/backup/credentials &&
+        n8n import:workflow --separate --input=/backup/workflows
+    volumes:
+      - C:\N8N\n8n\backup:/backup
+      - C:\N8N\n8n:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - demo
+
+networks:
+  demo:
+    driver: bridge
