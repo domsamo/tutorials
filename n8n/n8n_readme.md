@@ -4,7 +4,7 @@
 
 1. https://console.cloud.google.com/ (구글 클라우드 콘솔) 에 접속해서 프로젝트를 하나 생성.
 2. `Create VM` 버튼 클릭 : Compute Enging API -> 사용 (활성화)
-3. New VM instance (Preetire) 생성
+3. New VM instance (Freetier) 생성
 
 ````text
     Name : freetier
