@@ -3,50 +3,26 @@ version: '3.8'
 services:
   ansible-server:
     build:
-      context: .
-      dockerfile: Dockerfile.ansible-server
+      context: ./ansible-server
     container_name: ansible-server
-    hostname: ansible-server
-    volumes:
-      - ./ansible:/ansible
-      - ./ssh-keys:/root/.ssh
-    networks:
-      - ansible-network
-    stdin_open: true
+    # tty: true를 설정하여 컨테이너가 바로 종료되지 않도록 함
     tty: true
-    command: tail -f /dev/null
+    volumes:
+      # 로컬의 ansible-server 폴더를 컨테이너의 /ansible과 동기화
+      - ./ansible-server:/ansible
+      # 로컬의 SSH 비공개 키를 컨테이너의 root 사용자가 접근할 수 있는 위치에 마운트 (읽기 전용)
+      - ./.ssh/id_rsa:/root/.ssh/id_rsa:ro
+    # ansible-client가 먼저 실행되도록 의존성 설정
+    depends_on:
+      - ansible-client
 
-  ansible-client1:
+  ansible-client:
     build:
-      context: .
-      dockerfile: Dockerfile.ansible-client
-    container_name: ansible-client1
-    hostname: ansible-client1
+      context: ./ansible-client
+    container_name: ansible-client
     volumes:
-      - ./ssh-keys:/root/.ssh
-    networks:
-      - ansible-network
-    stdin_open: true
-    tty: true
-    command: tail -f /dev/null
-
-  ansible-client2:
-    build:
-      context: .
-      dockerfile: Dockerfile.ansible-client
-    container_name: ansible-client2
-    hostname: ansible-client2
-    volumes:
-      - ./ssh-keys:/root/.ssh
-    networks:
-      - ansible-network
-    stdin_open: true
-    tty: true
-    command: tail -f /dev/null
-
-networks:
-  ansible-network:
-    driver: bridge
-
-volumes:
-  ansible-data:
+      # 로컬의 SSH 공개 키를 클라이언트의 authorized_keys 파일로 마운트 (읽기 전용)
+      - ./.ssh/id_rsa.pub:/home/ansible_user/.ssh/authorized_keys:ro
+    # (선택 사항) 로컬 PC에서 클라이언트로 직접 SSH 접속하여 디버깅하고 싶을 때 포트 개방
+    # ports:
+    #   - "2222:22"

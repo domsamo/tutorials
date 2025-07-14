@@ -1,0 +1,14 @@
+---
+- name: Test connectivity and setup client
+  hosts: clients
+  become: yes  # sudo 권한으로 실행
+
+  tasks:
+    - name: Ping all clients
+      ansible.builtin.ping:
+
+    - name: Ensure htop is installed
+      ansible.builtin.apt:
+        name: htop
+        state: present
+        update_cache: yes
