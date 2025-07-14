@@ -16,6 +16,9 @@
 chmod +x setup.sh
 ./setup.sh
 ```
+# PowerShell 실행 정책 설정 (관리자 권한으로 실행)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
 
 ### 2. 환경 시작
 
