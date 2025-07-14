@@ -1,37 +1,10 @@
+# 베이스 이미지로 Ubuntu 최신 버전 사용
 FROM ubuntu:22.04
 
-# 기본 패키지 업데이트 및 필수 패키지 설치
+# Ansible과 SSH 클라이언트 설치
 RUN apt-get update && \
-    apt-get install -y \
-    python3 \
-    python3-pip \
-    openssh-client \
-    sshpass \
-    vim \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y ansible openssh-client && \
+    rm -rf /var/lib/apt/lists/*
 
-# Ansible 설치
-RUN pip3 install ansible
-
-# 작업 디렉토리 생성
-RUN mkdir -p /ansible
-
-# SSH 키 디렉토리 생성
-RUN mkdir -p /root/.ssh
-
-# SSH 설정
-RUN echo "Host *" >> /root/.ssh/config && \
-    echo "    StrictHostKeyChecking no" >> /root/.ssh/config && \
-    echo "    UserKnownHostsFile=/dev/null" >> /root/.ssh/config
-
+# 작업 디렉토리 설정
 WORKDIR /ansible
-
-# 기본 inventory 파일 생성
-RUN echo "[clients]" > /ansible/inventory && \
-    echo "ansible-client1" >> /ansible/inventory && \
-    echo "ansible-client2" >> /ansible/inventory && \
-    echo "" >> /ansible/inventory && \
-    echo "[clients:vars]" >> /ansible/inventory && \
-    echo "ansible_user=root" >> /ansible/inventory && \
-    echo "ansible_ssh_private_key_file=/root/.ssh/id_rsa" >> /ansible/inventory
