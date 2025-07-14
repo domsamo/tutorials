@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  ansible-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible-server
+    container_name: ansible-server
+    hostname: ansible-server
+    volumes:
+      - ./ansible:/ansible
+      - ./ssh-keys:/root/.ssh
+    networks:
+      - ansible-network
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  ansible-client1:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible-client
+    container_name: ansible-client1
+    hostname: ansible-client1
+    volumes:
+      - ./ssh-keys:/root/.ssh
+    networks:
+      - ansible-network
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  ansible-client2:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible-client
+    container_name: ansible-client2
+    hostname: ansible-client2
+    volumes:
+      - ./ssh-keys:/root/.ssh
+    networks:
+      - ansible-network
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+networks:
+  ansible-network:
+    driver: bridge
+
+volumes:
+  ansible-data:

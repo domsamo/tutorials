@@ -1,0 +1,35 @@
+FROM ubuntu:22.04
+
+# 기본 패키지 업데이트 및 필수 패키지 설치
+RUN apt-get update && \
+    apt-get install -y \
+    openssh-server \
+    python3 \
+    python3-pip \
+    sudo \
+    vim \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# SSH 서버 설정
+RUN mkdir /var/run/sshd
+
+# SSH 설정 수정
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+
+# SSH 키 디렉토리 생성
+RUN mkdir -p /root/.ssh
+
+# SSH 서비스 시작 스크립트 생성
+RUN echo '#!/bin/bash' > /start.sh && \
+    echo 'service ssh start' >> /start.sh && \
+    echo 'tail -f /dev/null' >> /start.sh && \
+    chmod +x /start.sh
+
+# SSH 서비스 포트 노출
+EXPOSE 22
+
+# 시작 명령어
+CMD ["/start.sh"]
