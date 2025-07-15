@@ -5,7 +5,7 @@
 - 쉬운 관리: docker-compose up, down 명령어로 전체 테스트 환경을 쉽게 생성하고 삭제할 수 있습니다.
  
  
-1. 프로젝트 폴더 구조 생성
+## 1. 프로젝트 폴더 구조 생성
 ```text
     ansible-docker-test/
     ├── .ssh/
@@ -13,6 +13,7 @@
     │   └── id_rsa.pub      # Ansible 클라이언트에게 등록할 SSH 공개 키
     ├── ansible-client/
     │   └── Dockerfile
+    │   └── entrypoint.sh
     ├── ansible-server/
     │   ├── Dockerfile
     │   ├── hosts.ini       # Ansible 인벤토리 파일
@@ -20,7 +21,7 @@
     └── docker-compose.yml
 ``` 
 
-2. SSH 키 생성
+## 2. SSH 키 생성
 ansible-server가 ansible-client에 비밀번호 없이 접속하기 위해 SSH 키를 생성합니다.
 ```shell
 # .ssh 폴더 생성
@@ -32,7 +33,7 @@ cd .ssh
 ssh-keygen -t rsa -b 4096 -f id_rsa -N ""
 ```
 
-3. Ansible Client 구성 (ansible-client/Dockerfile)
+## 3. Ansible Client 구성 (ansible-client/Dockerfile)
 - ansible-client/Dockerfile 파일 작성:
 ```dockerfile
 # 베이스 이미지로 Ubuntu 최신 버전 사용
@@ -52,17 +53,26 @@ RUN echo "ansible_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # SSH 서버 설정을 위해 sshd_run 디렉토리 생성
 RUN mkdir -p /var/run/sshd
 
+# Copy id_rsa
+# COPY ../.ssh/id_rsa /home/ansible_user/id_rsa.pub
+
 # 사용자 홈 디렉토리에 .ssh 디렉토리 생성 및 권한 설정
 # authorized_keys 파일은 docker-compose에서 볼륨 마운트로 주입될 예정
 RUN mkdir -p /home/ansible_user/.ssh && \
     chown -R ansible_user:ansible_user /home/ansible_user/.ssh && \
-    chmod 700 /home/ansible_user/.ssh
+    chmod 700 /home/ansible_user/.ssh 
+
+# Entrypoint 스크립트 복사 및 실행 권한 부여
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
 
 # 컨테이너 실행 시 SSH 서버를 데몬 모드로 실행
 CMD ["/usr/sbin/sshd", "-D"]
 ``` 
 
-4. Ansible Server 구성 (ansible-server/)
+## 4. Ansible Server 구성 (ansible-server/)
 ansible-server/Dockerfile 파일 작성:
 ```dockerfile
 # 베이스 이미지로 Ubuntu 최신 버전 사용
@@ -89,6 +99,8 @@ ansible-client ansible_user=ansible_user ansible_ssh_private_key_file=/root/.ssh
 # 호스트 키 체크를 비활성화하여 처음 접속 시 확인 프롬프트를 건너뜀
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ```
+
+
 **ansible-server/playbook.yml (테스트 플레이북) 작성:**
 
 간단하게 ping 테스트를 하고, ansible-client에 htop 패키지를 설치하는 예제입니다.
@@ -110,7 +122,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
         update_cache: yes
 ```
 
-5. Docker Compose 파일 작성
+## 5. Docker Compose 파일 작성
  
 이제 두 서비스를 하나로 묶어줄 docker-compose.yml 파일을 작성합니다.
 ```dockerfile
@@ -138,42 +150,45 @@ services:
     container_name: ansible-client
     volumes:
       # 로컬의 SSH 공개 키를 클라이언트의 authorized_keys 파일로 마운트 (읽기 전용)
-      - ./.ssh/id_rsa.pub:/home/ansible_user/.ssh/authorized_keys:ro
+       - ./.ssh/id_rsa.pub:/home/ansible_user/id_rsa.pub:ro
+    #  - ./.ssh/id_rsa.pub:/home/ansible_user/.ssh/authorized_keys:ro
     # (선택 사항) 로컬 PC에서 클라이언트로 직접 SSH 접속하여 디버깅하고 싶을 때 포트 개방
     # ports:
     #   - "2222:22"
-
 ``` 
-Use code with caution.
-Yaml
-6단계: 실행 및 테스트
+
+## 6. 실행 및 테스트
 모든 파일 작성이 완료되었습니다. 이제 Docker 컨테이너를 빌드하고 실행하여 Ansible을 테스트합니다.
-1. Docker 컨테이너 빌드 및 실행
+
+### 1. Docker 컨테이너 빌드 및 실행 **
 프로젝트 루트 폴더(ansible-docker-test)에서 다음 명령어를 실행합니다.
-Generated bash
+
+```bash
 # 컨테이너 이미지 빌드
 docker-compose build
 
 # 백그라운드에서 컨테이너 실행
 docker-compose up -d
-Use code with caution.
-Bash
-2. ansible-server 컨테이너 접속
+
+```
+
+### 2. ansible-server 컨테이너 접속
 아래 명령어로 실행 중인 ansible-server 컨테이너 내부에 셸(bash)로 접속합니다.
-Generated bash
+```bash
 docker-compose exec ansible-server bash
-Use code with caution.
-Bash
-3. Ansible 명령어 테스트
+```
+
+### 3. Ansible 명령어 테스트
 이제 컨테이너 안에서 Ansible 명령어를 실행하여 ansible-client와의 연결을 테스트합니다.
-Ping 테스트:
-Generated bash
+
+**Ping 테스트:**
+```bash
 # 컨테이너 내부에서 실행
 ansible all -i hosts.ini -m ping
-Use code with caution.
-Bash
+```
+
 성공하면 다음과 같은 초록색 SUCCESS 메시지가 나타납니다.
-Generated json
+```json
 ansible-client | SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
@@ -181,31 +196,43 @@ ansible-client | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-Use code with caution.
-Json
-플레이북 실행:
-Generated bash
+```
+
+**플레이북 실행:**
+
+```bash
 # 컨테이너 내부에서 실행
 ansible-playbook -i hosts.ini playbook.yml
-Use code with caution.
-Bash
+```
+
 성공적으로 실행되면 htop 패키지가 ansible-client에 설치되고, changed=1과 같은 결과가 표시됩니다.
-4. (선택) 결과 확인
+
+
+### 4. (선택) 결과 확인
 플레이북이 잘 실행되었는지 ansible-client에 직접 들어가서 확인할 수 있습니다.
-Generated bash
+```bash
 # 새 터미널에서 실행
-docker-compose exec ansible-client bash
+docker compose exec ansible-client bash
 
 # 컨테이너 내부에서 htop이 설치되었는지 확인
 which htop
-Use code with caution.
-Bash
+```
 /usr/bin/htop 경로가 출력되면 성공입니다.
-7단계: 환경 종료 및 정리
+
+
+### 7. 환경 종료 및 정리
 테스트가 끝나면 다음 명령어로 모든 컨테이너와 네트워크를 깔끔하게 삭제할 수 있습니다.
-Generated bash
-# -v 옵션은 볼륨까지 함께 삭제합니다.
-docker-compose down -v
-Use code with caution.
-Bash
-이제 Windows Docker Desktop에서 Ansible 서버-클라이언트 테스트를 위한 완벽한 환경이 준비되었습니다. 이 구조를 기반으로 더 복잡한 플레이북을 작성하고 테스트를 확장해 나갈 수 있습니다.
+
+```bash
+docker compose down -v
+```
+
+** 참고 **
+
+Dockerfile 수정 시 재 build 방법 
+```bash
+docker compose up -d --build
+
+docker compose build --no-cache
+```
+

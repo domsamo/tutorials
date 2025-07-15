@@ -15,11 +15,20 @@ RUN echo "ansible_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # SSH 서버 설정을 위해 sshd_run 디렉토리 생성
 RUN mkdir -p /var/run/sshd
 
+# Copy id_rsa
+# COPY ../.ssh/id_rsa /home/ansible_user/id_rsa.pub
+
 # 사용자 홈 디렉토리에 .ssh 디렉토리 생성 및 권한 설정
 # authorized_keys 파일은 docker-compose에서 볼륨 마운트로 주입될 예정
 RUN mkdir -p /home/ansible_user/.ssh && \
     chown -R ansible_user:ansible_user /home/ansible_user/.ssh && \
-    chmod 700 /home/ansible_user/.ssh
+    chmod 700 /home/ansible_user/.ssh 
+
+# Entrypoint 스크립트 복사 및 실행 권한 부여
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
 
 # 컨테이너 실행 시 SSH 서버를 데몬 모드로 실행
 CMD ["/usr/sbin/sshd", "-D"]
