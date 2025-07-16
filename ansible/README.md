@@ -24,6 +24,8 @@
 ## 2. SSH 키 생성
 ansible-server가 ansible-client에 비밀번호 없이 접속하기 위해 SSH 키를 생성합니다.
 ```shell
+# PowerShell 에서 실행 
+
 # .ssh 폴더 생성
 mkdir .ssh
 
