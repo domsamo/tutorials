@@ -22,6 +22,16 @@
 ``` 
 
 ## 2. SSH 키 생성
+
+- OpenSSH 설치
+ 
+[https://github.com/PowerShell/Win32-OpenSSH/releases](https://github.com/PowerShell/Win32-OpenSSH/releases)
+
+```text
+OpenSSH-Win64-v9.8.3.0.msi 다운받아 설치.
+시스템 환경 변수 Path 추가 : c:\Program Files\OpenSSH
+```
+
 ansible-server가 ansible-client에 비밀번호 없이 접속하기 위해 SSH 키를 생성합니다.
 ```shell
 # PowerShell 에서 실행 
@@ -167,17 +177,17 @@ services:
 
 ```bash
 # 컨테이너 이미지 빌드
-docker-compose build
+docker compose build
 
 # 백그라운드에서 컨테이너 실행
-docker-compose up -d
+docker compose up -d
 
 ```
 
 ### 2. ansible-server 컨테이너 접속
 아래 명령어로 실행 중인 ansible-server 컨테이너 내부에 셸(bash)로 접속합니다.
 ```bash
-docker-compose exec ansible-server bash
+docker compose exec ansible-server bash
 ```
 
 ### 3. Ansible 명령어 테스트
@@ -185,12 +195,19 @@ docker-compose exec ansible-server bash
 
 **Ping 테스트:**
 ```bash
+# 개인키의 권한 확인
+ll /root/.ssh/id_rsa
+# -rw------- 1 root root 3381 Jul 16 03:58 id_rsa
+
+# -rwxrwxrwx 1 root root 3381 Jul 16 03:58 id_rsa 일 경우 권한 변경
+chmod 660 /root/.ssh/id_rsa
+
 # 컨테이너 내부에서 실행
 ansible all -i hosts.ini -m ping
 ```
 
 성공하면 다음과 같은 초록색 SUCCESS 메시지가 나타납니다.
-```json
+```text
 ansible-client | SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
@@ -229,12 +246,20 @@ which htop
 docker compose down -v
 ```
 
-** 참고 **
+** docker 참고 **
 
-Dockerfile 수정 시 재 build 방법 
 ```bash
+# Dockerfile 수정 시 재 build 방법 
 docker compose up -d --build
 
 docker compose build --no-cache
-```
 
+# docker 사용상태를 확인
+docker system df -v
+
+# 일괄 삭제
+docker system prune -a
+docker container prune
+docker volume prune
+docker volume prune
+```

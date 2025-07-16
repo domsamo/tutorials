@@ -10,8 +10,8 @@ services:
     volumes:
       # 로컬의 ansible-server 폴더를 컨테이너의 /ansible과 동기화
       - ./ansible-server:/ansible
-      # 로컬의 SSH 비공개 키를 컨테이너의 root 사용자가 접근할 수 있는 위치에 마운트 (읽기 전용)
-      - ./.ssh/id_rsa:/root/.ssh/id_rsa:ro
+      # 로컬의 SSH 비공개 키를 컨테이너의 root 사용자가 접근할 수 있는 위치에 마운트
+      - ./.ssh/id_rsa:/root/.ssh/id_rsa
     # ansible-client가 먼저 실행되도록 의존성 설정
     depends_on:
       - ansible-client
@@ -21,8 +21,8 @@ services:
       context: ./ansible-client
     container_name: ansible-client
     volumes:
-      # 로컬의 SSH 공개 키를 클라이언트의 authorized_keys 파일로 마운트 (읽기 전용)
-       - ./.ssh/id_rsa.pub:/home/ansible_user/id_rsa.pub:ro
+      # 로컬의 SSH 공개 키를 클라이언트의 authorized_keys 파일로 마운트
+       - ./.ssh/id_rsa.pub:/home/ansible_user/id_rsa.pub
     #  - ./.ssh/id_rsa.pub:/home/ansible_user/.ssh/authorized_keys:ro
     # (선택 사항) 로컬 PC에서 클라이언트로 직접 SSH 접속하여 디버깅하고 싶을 때 포트 개방
     # ports:
