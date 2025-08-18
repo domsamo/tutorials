@@ -1,0 +1,488 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Slack Trigger').first().json.text.replace(/<@[^>]+>/g, \"\") }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=DATABASE SCHEMA:\n{{ $json.schema }}\n\nLooking at the database schema above, convert a user's question into a SQL query to fetch data from the database. return the SQL query only "
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1480,
+        0
+      ],
+      "id": "d3eae51c-2e62-406b-823a-f439cb9e59da",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-2025-04-14"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        220
+      ],
+      "id": "05af99c2-8ebd-4b2d-a7ca-b187f835b3ac",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "96yvOWGWa0cR3yGk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output.query }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1860,
+        0
+      ],
+      "id": "42d319fe-2dd0-4a51-bd21-0ca206d79ce3",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "QWnUbD61gdh6Jm8d",
+          "name": "jasonkang14@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"query\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t\t\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1640,
+        220
+      ],
+      "id": "50f4d5cb-29aa-4949-aff2-e1af1831a894",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=QUERY RESULT:\n{{ JSON.stringify($json) }}\n\nOriginal Question:  {{ $('Slack Trigger').first().json.text.replace(/<@[^>]+>/g, \"\") }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Look at the query result and the user's question and return a user friendly message"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2080,
+        0
+      ],
+      "id": "976eeb09-3c6b-44e4-9712-07eb79ffd0e7",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2160,
+        220
+      ],
+      "id": "baefcf3c-b037-4d9b-aa5c-6515935508e8",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "96yvOWGWa0cR3yGk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let schema = ''\n\nfor (const item of $input.all()) {\n  schema += `${item.json.create_statement}\\n\\n`\n}\n\nreturn [{schema}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        0
+      ],
+      "id": "9878dc00-4fa8-4552-8fee-fa379d01e9be",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    col.table_name,\n    COALESCE(obj_description(c.oid), 'No description available') AS table_description,\n    string_agg(col.column_name, ', ' ORDER BY col.ordinal_position) AS all_columns\nFROM information_schema.columns col\nLEFT JOIN pg_class c ON c.relname = col.table_name\nLEFT JOIN pg_namespace n ON n.oid = c.relnamespace\nWHERE col.table_schema = 'public'\nAND n.nspname = 'public'\nGROUP BY col.table_name, c.oid\nORDER BY col.table_name;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "7b058375-e835-4ab7-83b5-64779f012079",
+      "name": "테이블 이름 가져오기",
+      "credentials": {
+        "postgres": {
+          "id": "QWnUbD61gdh6Jm8d",
+          "name": "jasonkang14@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let schema = ''\n\nfor (const item of $input.all()) {\n  schema += `tableName: ${item.json.table_name}\ntableDescription: ${item.json.table_description}\ncolumnList: ${item.json.all_columns}`\n}\n\nreturn [{schema}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "b57b96e7-17f6-4d35-b8dc-cfc509ec81d3",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-2025-04-14"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        220
+      ],
+      "id": "1dd5d6f3-1179-4dcd-9edf-6cd3b24eeba4",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "96yvOWGWa0cR3yGk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"tables\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"tableName\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        820,
+        220
+      ],
+      "id": "1b8b4ef4-16cf-426e-902c-39685cb42670",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    'CREATE TABLE ' || table_name || ' (' || E'\\n' ||\n    string_agg(\n        '    ' || column_name || ' ' || \n        CASE \n            WHEN data_type = 'character varying' THEN 'VARCHAR(' || character_maximum_length || ')'\n            WHEN data_type = 'integer' AND column_default LIKE 'nextval%' THEN 'SERIAL PRIMARY KEY'\n            WHEN data_type = 'numeric' THEN 'DECIMAL(' || numeric_precision || ',' || numeric_scale || ')'\n            WHEN data_type = 'timestamp without time zone' THEN 'TIMESTAMP'\n            WHEN data_type = 'boolean' THEN 'BOOLEAN'\n            ELSE UPPER(data_type)\n        END ||\n        CASE WHEN is_nullable = 'NO' AND column_default NOT LIKE 'nextval%' THEN ' NOT NULL' ELSE '' END ||\n        CASE WHEN column_default IS NOT NULL AND column_default NOT LIKE 'nextval%' \n             THEN ' DEFAULT ' || column_default ELSE '' END,\n        E',\\n' ORDER BY ordinal_position\n    ) || E'\\n' || ');' || E'\\n\\n' AS create_statement\nFROM information_schema.columns \nWHERE table_schema = 'public'\n  AND table_name IN ({{ $json.output.tables.map((tableName) => `'${tableName}'`) }})\nGROUP BY table_name\nORDER BY table_name;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "4f947748-565c-481b-82c6-298c88d48d57",
+      "name": "스키마 가져오기",
+      "credentials": {
+        "postgres": {
+          "id": "zf20pLcO8Fj9JJj2",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Slack Trigger').first().json.text.replace(/<@[^>]+>/g, \"\") }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=TABLE DESCRIPTION:\n{{ $json.schema }}\n\nBy looking at the table description above, which contains information about the name of tables and their relative descriptions along with the list of columns, return the list of names of the tables that you need to access in order to retrieve data related to the user's question"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        660,
+        0
+      ],
+      "id": "29ee1690-6288-48bb-b073-9fcb78e8c645",
+      "name": "테이블 리스트 추출"
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C092QEJH6LB",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "99d7116a-bf20-4dfb-b288-f490f5ea94df",
+      "name": "Slack Trigger",
+      "webhookId": "617d0710-e3d6-4907-a57e-8d87a2e637f8",
+      "credentials": {
+        "slackApi": {
+          "id": "alO3zx3l2bgaL0cV",
+          "name": "Slack account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Slack Trigger').first().json.channel }}",
+          "mode": "id"
+        },
+        "text": "={{ $json.text }}\n\nQuery:\n```\n{{ $('Basic LLM Chain').item.json.output.query }}\n```",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2440,
+        0
+      ],
+      "id": "19aab5a9-3510-4d01-aa53-722e73b9d5cf",
+      "name": "Send a message",
+      "webhookId": "bbd706d2-30b6-4bb1-8a85-5fc6d1ade2d9",
+      "credentials": {
+        "slackApi": {
+          "id": "alO3zx3l2bgaL0cV",
+          "name": "Slack account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "테이블 이름 가져오기": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "테이블 리스트 추출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "테이블 리스트 추출",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "테이블 리스트 추출",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "스키마 가져오기": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "테이블 리스트 추출": {
+      "main": [
+        [
+          {
+            "node": "스키마 가져오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "테이블 이름 가져오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "67fe489f-770e-4d62-b2bb-ca720cf40352",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d8569e51104cfa451bd455a95dbfd98c913c0704d025656c6d11ba72aeb59663"
+  },
+  "id": "pFy5Cq5jIqEOKHUt",
+  "tags": []
+}
